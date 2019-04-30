@@ -1,0 +1,189 @@
+From 844483d0c7d85fb2c2f735ea33746c3946ad4a72 Mon Sep 17 00:00:00 2001
+From: Wyatt Lindquist <wlindquist@ufl.edu>
+Date: Thu, 8 Sep 2016 14:39:40 -0400
+Subject: [PATCH] 2
+
+---
+ include/clock.h     |  1 +
+ system/clkhandler.c |  4 +++
+ system/clkinit.c    |  4 ++-
+ system/initialize.c |  2 +-
+ system/main.c       | 95 ++++++++++++++++++++++++++++++++++++++++++++++-------
+ 5 files changed, 93 insertions(+), 13 deletions(-)
+
+diff --git a/include/clock.h b/include/clock.h
+index 64ae66b..32240f6 100644
+--- a/include/clock.h
++++ b/include/clock.h
+@@ -1,6 +1,7 @@
+ /* clock.h */
+ 
+ extern	uint32	clktime;	/* current time in secs since boot	*/
++extern  uint32  clktime_ms;     /* current time in ms since boot        */
+ 
+ extern	qid16	sleepq;		/* queue for sleeping processes		*/
+ extern	int32	slnonempty;	/* nonzero if sleepq is nonempty	*/
+diff --git a/system/clkhandler.c b/system/clkhandler.c
+index b3ff5cc..ebeaf0c 100644
+--- a/system/clkhandler.c
++++ b/system/clkhandler.c
+@@ -24,6 +24,10 @@ void	clkhandler()
+ 
+ 	csrptr->tisr = AM335X_TIMER1MS_TISR_OVF_IT_FLAG;
+ 
++	/* Increments the ms counter */
++
++	clktime_ms++;
++
+ 	/* Decrement 1000ms counter */
+ 
+ 	count1000--;
+diff --git a/system/clkinit.c b/system/clkinit.c
+index af193f3..d72fda3 100644
+--- a/system/clkinit.c
++++ b/system/clkinit.c
+@@ -3,7 +3,8 @@
+ #include <xinu.h>
+ 
+ uint32	clktime;		/* Seconds since boot			*/
+-uint32	ctr1000 = 0;		/* Milliseconds since boot		*/
++uint32  clktime_ms;             /* Milliseconds since boot (for real)   */
++uint32	ctr1000 = 0;		/* Milliseconds since boot (not really) */
+ qid16	sleepq;			/* Queue of sleeping processes		*/
+ uint32	preempt;		/* Preemption counter			*/
+ 
+@@ -41,6 +42,7 @@ void	clkinit(void)
+ 	preempt = QUANTUM;	/* Set the preemption time		*/
+ 
+ 	clktime = 0;		/* Start counting seconds		*/
++	clktime_ms = 0;         /* Start counting milliseconds          */
+ 
+ 	/* The following values are calculated for a	*/
+ 	/*   timer that generates 1ms tick rate		*/
+diff --git a/system/initialize.c b/system/initialize.c
+index 1c5f643..deb5b54 100644
+--- a/system/initialize.c
++++ b/system/initialize.c
+@@ -80,7 +80,7 @@ void	nulluser()
+ 
+ 	/* Initialize the network stack and start processes */
+ 
+-	net_init();
++	/* net_init(); */
+ 
+ 	/* Create a process to finish startup and start main */
+ 
+diff --git a/system/main.c b/system/main.c
+index 2894bc2..59884ed 100644
+--- a/system/main.c
++++ b/system/main.c
+@@ -2,22 +2,95 @@
+ 
+ #include <xinu.h>
+ 
+-process	main(void)
++pid32 producer_id;
++pid32 consumer_id;
++pid32 timer_id;
++
++int32 consumed_count = 0;
++const int32 CONSUMED_MAX = 100;
++
++/* Define your circular buffer structure and semaphore variables here */
++/* */
++
++/* Place your code for entering a critical section here */
++void mutex_acquire(sid32 mutex)
+ {
++	/* */
++}
+ 
+-	/* Run the Xinu shell */
++/* Place your code for leaving a critical section here */
++void mutex_release(sid32 mutex)
++{
++	/* */
++}
+ 
+-	recvclr();
+-	resume(create(shell, 8192, 50, "shell", 1, CONSOLE));
++/* Place the code for the buffer producer here */
++process producer(void)
++{
++	/* */
++
++	return OK;
++}
++
++/* Place the code for the buffer consumer here */
++process consumer(void)
++{
++	/* Every time your consumer consumes another buffer element,
++	 * make sure to include the statement:
++	 *   consumed_count += 1;
++	 * this will allow the timing function to record performance */
++	/* */
++
++	return OK;
++}
+ 
+-	/* Wait for shell to exit and recreate it */
+ 
+-	while (TRUE) {
+-		receive();
+-		sleepms(200);
+-		kprintf("\n\nMain process recreating shell\n\n");
+-		resume(create(shell, 4096, 20, "shell", 1, CONSOLE));
++/* Timing utility function - please ignore */
++process time_and_end(void)
++{
++	int32 times[5];
++	int32 i;
++
++	for (i = 0; i < 5; ++i)
++	{
++		times[i] = clktime_ms;
++		yield();
++
++		consumed_count = 0;
++		while (consumed_count < CONSUMED_MAX * (i+1))
++		{
++			yield();
++		}
++
++		times[i] = clktime - times[i];
+ 	}
++
++	kill(producer_id);
++	kill(consumer_id);
++
++	for (i = 0; i < 5; ++i)
++	{
++		kprintf("TIME ELAPSED (%d): %d\n", (i+1) * CONSUMED_MAX, times[i]);
++	}
++}
++
++process	main(void)
++{
++	recvclr();
++
++	/* Create the shared circular buffer and semaphores here */
++	/* */
++
++	producer_id = create(producer, 4096, 50, "producer", 0);
++	consumer_id = create(consumer, 4096, 50, "consumer", 0);
++	timer_id = create(time_and_end, 4096, 50, "timer", 0);
++
++	resched_cntl(DEFER_START);
++	resume(producer_id);
++	resume(consumer_id);
++	/* Uncomment the following line for part 3 to see timing results */
++	/* resume(timer_id); */
++	resched_cntl(DEFER_STOP);
++
+ 	return OK;
+-    
+ }
+-- 
+2.7.4
+
