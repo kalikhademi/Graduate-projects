@@ -1,0 +1,10 @@
+"Apulia.north"	"Apulia.south"	"Calabria"	"Liguria.east"	"Liguria.west"	"Sardinia.coast"	"Sardinia.inland"	"Sicily"	"Umbria"
+"Apulia.north"	6	0	0	0	0	0	0	2	0
+"Apulia.south"	0	60	0	0	0	0	0	0	0
+"Calabria"	1	0	14	0	0	0	0	2	0
+"Liguria.east"	0	0	0	13	0	0	0	1	1
+"Liguria.west"	0	0	0	1	15	0	0	0	0
+"Sardinia.coast"	0	0	0	0	0	8	1	0	0
+"Sardinia.inland"	0	0	0	0	0	1	18	0	0
+"Sicily"	0	1	2	0	0	0	0	5	0
+"Umbria"	0	0	0	1	0	0	0	0	14

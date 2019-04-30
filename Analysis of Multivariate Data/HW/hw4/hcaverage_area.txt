@@ -1,0 +1,4 @@
+"1"	"2"	"3"
+"Centre.North"	0	0	151
+"Sardinia"	0	0	98
+"South"	121	202	0

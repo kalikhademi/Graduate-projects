@@ -1,0 +1,5 @@
+"Certified"	"Certified-Expired"	"Denied"	"Withdrawn"
+"Certified"	7692	0	128	381
+"Certified-Expired"	2988	8859	526	292
+"Denied"	0	0	0	0
+"Withdrawn"	0	0	0	0
