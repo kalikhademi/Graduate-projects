@@ -1,0 +1,195 @@
+Rank,Country,Life Expectancy,Male Rank,Male Expectancy,Female Rank,Female Life Expectancy,Continent
+1,Japan,84,5,80,1,87,Asia
+2,Spain,83,5,80,2,86,Europe
+2,Andorra,83,16,79,2,86,Europe
+2,Australia,83,5,80,5,85,Asia
+2,Switzerland,83,2,81,5,85,Europe
+2,Italy,83,5,80,5,85,Europe
+2,Singapore,83,2,81,5,85,Asia
+2,San Marino,83,1,83,11,84,Europe
+9,Canada,82,5,80,11,84,North America
+9,Cyprus,82,5,80,11,84,Europe
+9,France,82,16,79,5,85,Europe
+9,Iceland,82,2,81,11,84,Europe
+9,Israel,82,2,81,11,84,Asia
+9,Luxemborg,82,5,80,11,84,Europe
+9,Monaco,82,16,79,5,85,Europe
+9,New Zealand,82,5,80,11,84,Asia
+9,Norway,82,5,80,11,84,Europe
+9,Sweden,82,5,80,11,84,Europe
+19,Republic of Korea,81,24,78,5,85,Asia
+19,Finland,81,24,78,11,84,Europe
+19,Portugal,81,24,78,11,84,Europe
+19,Ireland,81,16,79,22,83,Europe
+19,Malta,81,16,79,34,82,Europe
+19,Netherlands,81,16,79,22,83,Europe
+19,United Kingdom,81,16,79,22,83,Europe
+19,Austria,81,16,79,11,84,Europe
+19,Germany,81,16,79,22,83,Europe
+19,Greece,81,16,79,11,84,Europe
+29,Belgium,80,24,78,22,83,Europe
+29,Chile,80,33,77,22,83,South America
+29,Slovenia,80,33,77,22,83,Europe
+29,Denmark,80,24,78,34,82,Europe
+29,Lebanon,80,24,78,34,82,Asia
+34,Colombia,79,37,76,22,83,South America
+34,Nauru,79,45,75,22,83,Asia
+34,Costa Rica,79,33,77,36,81,North America
+34,Cuba,79,37,76,36,81,North America
+34,United States,79,37,76,36,81,North America
+34,Qatar,79,16,79,45,80,Asia
+40,Barbados,78,45,75,36,81,North America
+40,Czech Republic,78,45,75,36,81,Europe
+40,Croatia,78,51,74,36,81,Europe
+40,Kuwait,78,24,78,53,79,Asia
+44,Poland,77,58,73,36,81,Europe
+44,Uruguay,77,58,73,36,81,South America
+44,Estonia,77,84,71,36,81,Europe
+44,Bosnia and Herzegovina,77,45,75,45,80,Europe
+44,Suriname,77,45,75,45,80,South America
+44,Panama,77,51,74,45,80,North America
+44,Peru,77,45,75,53,79,South America
+44,Bahrain,77,37,76,61,78,Asia
+44,Brunei Darussalam,77,37,76,61,78,Asia
+44,Dominican Republic,77,37,76,61,78,North America
+44,Maldives,77,37,76,61,78,Asia
+55,Slovakia,76,69,72,45,80,Europe
+55,Venezuela,76,69,72,45,80,South America
+55,Vietnam,76,84,71,45,80,Asia
+55,Argentina,76,58,73,53,79,South America
+55,Mexico,76,58,73,53,79,North America
+55,United Arab Emirates,76,37,76,61,78,Asia
+55,Oman,76,51,74,61,78,Asia
+55,Saudi Arabia,76,51,74,61,78,Asia
+55,Tunisia,76,51,74,61,78,Africa
+55,Cook Islands,76,58,73,61,78,Asia
+55,Montenegro,76,58,73,61,78,Europe
+55,Macedonia,76,58,73,61,78,Europe
+67,Hungary,75,84,71,53,79,North America
+67,Saint Lucia,75,84,71,53,79,North America
+67,Thailand,75,84,71,53,79,Asia
+67,Ecuador,75,58,73,61,78,South America
+67,Bahamas,75,69,72,61,78,North America
+67,Belize,75,69,72,61,78,North America
+67,Paraguay,75,69,72,61,78,South America
+67,Turkey,75,69,72,61,78,Europe
+67,Sri Lanka,75,84,71,61,78,Asia
+67,China,75,51,74,87,77,Asia
+67,Antigua and Barbuda,75,58,73,87,77,North America
+67,Libya,75,58,73,87,77,Africa
+67,Dominica,75,69,72,87,77,North America
+67,Serbia,75,69,72,87,77,Europe
+81,Lithuania,74,111,68,45,80,Europe
+81,Latvia,74,103,69,53,79,Europe
+81,Niue,74,69,72,61,78,Asia
+81,Bulgaria,74,84,71,61,78,Europe
+81,Cabo Verde,74,84,71,61,78,Africa
+81,Romania,74,84,71,61,78,Europe
+81,Saint Kitts and Nevis,74,84,71,61,78,North America
+81,Georgia,74,95,70,61,78,Asia
+81,Mauritius,74,95,70,61,78,Africa
+81,Seychelles,74,103,69,61,78,Africa
+81,Honduras,74,69,72,87,77,North America
+81,Jamaica,74,69,72,87,77,North America
+81,Brazil,74,95,70,87,77,South America
+81,Iran,74,69,72,98,76,Asia
+81,Malaysia,74,69,72,98,76,Asia
+81,Saint Vincent and the Grenadines,74,69,72,98,76,North America
+81,Albania,74,58,73,104,75,Europe
+81,Jordan,74,69,72,104,75,Asia
+99,Samoa,73,95,70,87,77,Asia
+99,Grenada,73,103,69,87,77,North America
+99,Nicaragua,73,95,70,98,76,North America
+99,Palau,73,84,71,104,75,Asia
+103,Belarus,72,117,67,61,78,Europe
+103,El Salvador,72,111,68,87,77,North America
+103,Cambodia,72,95,70,104,75,Asia
+103,Azerbaijan,72,103,69,104,75,Europe
+103,Guatemala,72,111,68,104,75,North America
+103,Vanuatu,72,95,70,113,74,Asia
+103,Algeria,72,95,70,117,73,Africa
+110,Ukraine,71,125,66,98,76,Europe
+110,Armenia,71,117,67,104,75,Asia
+110,Republic of Moldova,71,125,66,104,75,Europe
+110,Egypt,71,103,69,113,74,Africa
+110,Indonesia,71,103,69,117,73,Asia
+110,Morocco,71,103,69,117,73,Africa
+110,Tonga,71,51,74,133,69,Asia
+117,Trinidad and Tobago,70,117,67,113,74,North America
+117,Iraq,70,125,66,113,74,Asia
+117,Democratic People's Republic of Korea,70,125,66,117,73,Asia
+117,Marshall Islands,70,111,68,123,72,Asia
+117,Bangladesh,70,103,69,128,71,Asia
+122,Russian Federation,69,142,63,104,75,Europe
+122,Fiji,69,117,67,117,73,Asia
+122,Kyrgyzstan,69,125,66,117,73,Asia
+122,Uzbekistan,69,117,67,123,72,Asia
+122,Philippines,69,131,65,123,72,Asia
+122,Micronesia,69,111,68,129,70,Asia
+122,Solomon Islands,69,117,67,129,70,Asia
+129,Syrian Arab Republic,68,146,62,98,76,Asia
+129,Kazakhstan,68,142,63,123,72,Asia
+129,Tuvalu,68,125,66,129,70,Asia
+129,Bolivia,68,131,65,129,70,South America
+129,Bhutan,68,111,68,133,69,Asia
+129,Nepal,68,117,67,133,69,Asia
+129,Tajikistan,68,117,67,133,69,Asia
+136,Mongolia,67,135,64,123,72,Asia
+136,Sao Tome and Principe,67,131,65,133,69,Africa
+136,Namibia,67,135,64,133,69,Africa
+139,Kiribati,66,135,64,133,69,Asia
+139,Timor-Leste,66,131,65,140,68,Asia
+139,India,66,135,64,140,68,Asia
+139,Myanmar,66,135,64,140,68,Asia
+139,Lao People's Democratic Republic,66,135,64,143,67,Asia
+144,Pakistan,65,135,64,146,66,Asia
+144,Rwanda,65,142,63,146,66,Africa
+146,Senegal,64,142,63,146,66,Africa
+146,Ethiopia,64,146,62,150,65,Africa
+146,Madagascar,64,146,62,150,65,Africa
+146,Yemen,64,146,62,150,65,Asia
+150,Guyana,63,157,60,143,67,South America
+150,Turkmenistan,63,157,60,143,67,Asia
+150,Eritrea,63,151,61,146,66,Africa
+150,Mauritania,63,151,61,150,65,Africa
+150,Sudan,63,151,61,150,65,Africa
+150,Gabon,63,146,62,156,64,Africa
+156,Papua New Guinea,62,157,60,150,65,Asia
+156,Ghana,62,151,61,156,64,Africa
+156,Haiti,62,151,61,156,64,North America
+156,Botswana,62,151,61,159,63,Africa
+156,Comoros,62,157,60,159,63,Asia
+156,Liberia,62,157,60,159,63,Africa
+162,Djibouti,61,157,60,159,63,Africa
+162,Gambia,61,163,59,159,63,Africa
+162,United Republic of Tanzania,61,163,59,159,63,Africa
+162,Kenya,61,163,59,165,62,Africa
+166,Afghanistan,60,167,58,167,61,Asia
+167,South Africa,59,175,56,165,62,Africa
+167,Malawi,59,167,58,168,60,Africa
+167,Benin,59,169,57,168,60,Africa
+167,Congo,59,169,57,168,60,Africa
+167,Niger,59,163,59,172,59,Africa
+172,Zimbabwe,58,175,56,168,60,Africa
+172,Burkina Faso,58,169,57,172,59,Africa
+172,Guinea,58,169,57,172,59,Africa
+172,Togo,58,169,57,172,59,Africa
+176,Uganda,57,175,56,176,58,Africa
+176,Zambia,57,178,55,176,58,Africa
+176,Mali,57,169,57,178,57,Africa
+179,Cameroon,56,178,55,178,57,Africa
+179,Burundi,56,180,54,178,57,Africa
+181,Equatorial Guinea,55,180,54,178,57,Africa
+181,South Sudan,55,180,54,182,56,Africa
+183,Guinea-Bissau,54,183,53,182,56,Africa
+183,Nigeria,54,183,53,184,55,Africa
+183,Swaziland,54,185,52,184,55,Africa
+186,Somalia,53,188,51,184,55,Africa
+186,Cote d'Ivoire,53,185,52,187,54,Africa
+186,Mozambique,53,185,52,187,54,Africa
+189,Democratic Republic of the Congo,52,189,50,189,53,Africa
+190,Angola,51,189,50,190,52,Africa
+190,Central African Republic,51,189,50,190,52,Africa
+190,Chad,51,189,50,190,52,Africa
+193,Lesotho,50,193,49,190,52,Africa
+194,Sierra Leone,46,194,45,194,46,Africa
