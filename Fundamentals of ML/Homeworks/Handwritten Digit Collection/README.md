@@ -1,5 +1,4 @@
-# homework07-kalikhademi
-homework07-kalikhademi created by GitHub Classroom
+Author:Kiana Alikkhademi
 
 
 * "pics" folder contains all the original image of my hand written characters.
