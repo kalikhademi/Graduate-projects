@@ -1,3 +1,5 @@
+
+"""written by Kiana Alikhademi"""
 import numpy as np
 import matplotlib.pyplot as plt
 import math 
