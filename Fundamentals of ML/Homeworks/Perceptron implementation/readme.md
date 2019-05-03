@@ -1,0 +1,3 @@
+For each two-dimensional data sets, following tasks have been done:
+1. For each data set, design two different neural networks by hand which can discriminate between the classes (each class indicated by a different color).
+2. Code our solutions in python and verify that the network learns a decision boundary similar to what you designed. For this section, you should include plots showing the data and the corresponding decision boundaries learned by the networks.
