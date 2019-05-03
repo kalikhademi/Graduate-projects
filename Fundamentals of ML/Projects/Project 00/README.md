@@ -1,5 +1,4 @@
-# Detecting Red Cars in High Resolution Satelite Image
-project00-kalikhademi created by GitHub Classroom
+Author: Kiana Alikhademi
 
 These are the libraries I am using:
 import matplotlib.pyplot as plt
