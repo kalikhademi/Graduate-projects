@@ -3,10 +3,9 @@
 """
 Created on Tue Nov 20 10:55:30 2018
 
-@author: kianamac
 """
 
-# Code from Chapter 4 of Machine Learning: An Algorithmic Perspective (2nd Edition)
+# Code credits: from Chapter 4 of Machine Learning: An Algorithmic Perspective (2nd Edition)
 # by Stephen Marsland (http://stephenmonika.net)
 
 # You are free to use, change, or redistribute the code in any way you wish for
@@ -55,7 +54,7 @@ class mlp:
             
         print("Stopped", new_val_error,old_val_error1, old_val_error2)
         return new_val_error
-    	
+    #this is the part changed from original data to fit the purpose of homework	
     def mlptrain(self,inputs,targets,eta):
          """ Train the thing """
         
