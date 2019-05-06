@@ -2,8 +2,7 @@ import numpy as np
 import csv
 import os
 import pandas as pd
-from MahdiScript import sjoin
-from KianaScript import EmployerRangeMapping,StateMapping,MajorMapping, RowMapping, JobMajorMapping, EmployerStateListMapping, JobStateListMapping, ListOfState
+from MappingScript import EmployerRangeMapping,StateMapping,MajorMapping, RowMapping, JobMajorMapping, EmployerStateListMapping, JobStateListMapping, ListOfState
 
 
 """ reading the data after Diandra script was ran"""

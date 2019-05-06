@@ -4,6 +4,10 @@ Dataset link: https://www.kaggle.com/jboysen/us-perm-visas/activity
 Supervised Learning Methods: Random Forest, Decision Tree, Naive Bayes
 Unsupervised Learning Methods: PAM, Complete Linkage and Divisive method (Diana). 
 
+Procedure:
+* To clean the data you need first to Download it into 'cleaning scripts' folder. The output data will be run through FinalCleaning script to do the mapping
+* Once the data is cleaned, you coul run clustering or classifier scripts to produce results
+
 
 Motivation
 * Determine whether machine learning techniques could accurately predict visa decisions? 
