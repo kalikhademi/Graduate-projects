@@ -3,7 +3,7 @@
 """
 Created on Wed Mar 27 13:44:29 2019
 
-@author: kianamac
+@author: Kiana Alikhademi, Mahdi Kouretchian, Diandra Prioleau
 """
 
 
@@ -267,7 +267,7 @@ def ListOfState (c) :
 	'ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']
 	if c in List_State:
 		pass 
-	elif c=='ALABAMA':
+	elif c =='ALABAMA':
 		return 'AL'
 	elif c=='ALASKA':
 		return 'AK'
@@ -382,4 +382,3 @@ def EmployerStateListMapping(Df):
 	Df['Employer State'] = Df['employer_state'].apply(ListOfState)
 
 	return Df['Employer State']
-#Df[['foreign_worker_info_major','Career_Cluster']].to_csv("/Users/kianamac/Dropbox (UFL)/courses/Spring 2019/MultivariateDataAnalysis/project/df_new.csv", index=False)
