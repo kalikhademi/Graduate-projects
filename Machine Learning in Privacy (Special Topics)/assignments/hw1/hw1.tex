@@ -1,0 +1,498 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[letterpaper,margin=0.8in,nohead]{geometry}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage{url}
+\usepackage{breakurl}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={red},
+    citecolor={red},
+    urlcolor={blue}
+}
+
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{scrextend}
+\usepackage{enumitem}
+\usepackage{url}
+
+\usepackage{caption}
+\usepackage{graphicx}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+\newenvironment{answer}{\em \color{blue} \begin{adjustwidth}{1cm}{1cm}}{\end{adjustwidth}}
+
+% math
+\usepackage{amsthm,amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\mc}[1]{\mathcal{#1}}	% Mechanisms / Algorithms
+\newcommand{\rv}[1]{\mathbf{#1}}    % Random variable
+
+\newcommand{\pr}[1]{\mathrm{Pr}\{#1\}} % Probability
+
+\newtheorem{corollary}{\bf Corollary}%[theorem]
+\newtheorem{lemma}{\bf Lemma}%[theorem]
+\newtheorem{definition}{\bf Definition}%[section]
+
+\newtheorem{observation}{\bf Observation}%[theorem]
+
+
+
+% load cleveref last!
+\usepackage[capitalise]{cleveref}
+
+\crefname{observation}{Observation}{Observations}
+
+
+\begin{document}
+
+\title{CIS 6930: Privacy \& Machine Learning (Fall 2019) \\Homework 1 --- Data Privacy}
+
+%% This is an individual assignment!!
+%% TODO: put your name here!
+\author{Name: Your Name Here}
+
+\maketitle
+
+\begin{center}
+	\color{red}\bf This is an individual assignment!
+\end{center}
+
+\section*{Instructions}
+%
+
+Please read the instructions and questions carefully. Write your answers directly in the space provided. Compile the tex document and hand in the resulting PDF.
+
+For this homework, you will solve several data privacy problems. The fourth problem asks you to implement a differential privacy mechanism using Python. Use the code skeleton provided and submit the completed source file(s) alongside with the PDF.\footnote{You are encouraged to use Python3. You may use HiPerGator or your own system.} {\em Note: bonus points you get on this homework *do* carry across assignments/homework.}
+
+
+
+
+\newpage
+\section*{Problem 1: Syntactic Metrics (20 pts)}
+%
+
+
+Consider the data set depicted in~\cref{tbl:pr1data}. Answer the following questions. (Justify your answers as appropriate.)
+
+\begin{table}[h]
+	\centering	
+    \begin{tabular}{|l|l|l|l|l|l|}
+    \hline
+    Age   & Zip Code & Sex & Credit Score & Yearly Income & Loan     \\\hline \hline
+    30-39 & 32607    & M   & 678          & 90k           & Approved \\\hline
+    30-39 & 32607    & M   & 799          & 120k          & Approved \\\hline
+    40-49 & 32611    & F   & 451          & 35k           & Declined \\\hline
+    20-29 & 32607    & F   & 783          & 30k           & Approved \\\hline
+    20-29 & 32607    & F   & 560          & 70k           & Declined \\\hline
+    40-49 & 32611    & M   & 725          & 22k           & Declined \\\hline
+    \end{tabular}
+    \caption{Anonymized Data Set.}
+    \label{tbl:pr1data}
+\end{table}
+
+
+
+\begin{enumerate}
+		\item (4 pts) What are the quasi-identifiers? What are the sensitive attributes? 
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+		\item (4 pts) What is the largest integer $k$ such that the data set satisfies $k$-anonymity? What is the largest integer $l$ such that the data set satisfies $l$-diversity? 
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	\item (6 pts) Modify the data set using generalization and suppression to ensure that it satisfies $3$-anonymity and $2$-diversity. Here we are looking for a solution that minimally affects the utility of the data. Write the modified data set below.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (6 pts) Your student friend Alice (who is not in the anonymized data set) was recently declined for a loan despite her 30k yearly income. She thinks she may have been discriminated against. 
+	
+	The bank who declined Alice's loan has published the following transparency report about their loan approval model. 
+	
+	\begin{itemize}
+		\item If \texttt{yearly\_income} $\geq 50$k then: return \texttt{APPROVED}
+		\item If \texttt{yearly\_income} $\geq 25$k:
+		\begin{itemize}
+			\item If \texttt{student}:
+				\begin{itemize} 
+					\item If \texttt{credit\_score} $\geq 550$ then:	return \texttt{APPROVED}	
+					\item Else: return \texttt{DECLINED}					
+				\end{itemize}	
+			\item Else (not \texttt{student}) if \texttt{credit\_score} $\geq 500$ then: return \texttt{APPROVED}
+		\end{itemize}		 
+		\item If \texttt{yearly\_income} $\geq 20$k and \texttt{credit\_score} $\geq 650$ then: return \texttt{APPROVED}
+		\item return \texttt{DECLINED}
+	\end{itemize}
+	
+	What can you infer about Alice assuming that the transparency report accurately reflects the loan approval model? What do you conclude about the possible tension between algorithmic transparency and privacy? (Explain your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	
+\end{enumerate}
+
+\newpage
+\section*{Problem 2: Randomized Response \& Local Differential Privacy (25 pts)}
+%
+
+Social science researchers at the University of Florida want to conduct a study to explore the prevalence of crime among students. Specifically they want to ask questions of the form: {\em have you ever committed crime X?} (Here X stands for a specific crime or crime category.) 
+
+Researchers are ethical so they want to carefully design the study to ensure that participants respond truthfully and that privacy is protected. They reached out to you, a data privacy expert, to evaluate their methods.
+
+Consider a participant that is asked the question {have you ever committed crime X?} This question admits a yes or no answer. Before answering the participant is instructed to use the following algorithm to compute a ``noisy'' answer given their true answer and only report the noisy answer to the researchers.
+
+\medskip
+%\begin{figure}
+\fbox{%
+    \parbox{0.915\textwidth}{%
+    \centering
+\noindent {\sf NoisyAnswer(\texttt{true\_answer}, $p \in (0,1)$):}
+%
+\smallskip
+\begin{itemize}[nolistsep,noitemsep]
+	\item If \texttt{true\_answer} is \texttt{NO}, then:
+		\begin{itemize}
+			\item With probability $p$ return \texttt{NO}
+			\item With probability $1-p$ return \texttt{YES}
+		\end{itemize}
+	\item Else (if \texttt{true\_answer} is \texttt{YES}), then: return \texttt{YES}
+\end{itemize} }}%
+
+%\caption{Algorithm}
+%\end{figure}
+
+\bigskip
+\noindent Answer the following questions.
+
+%
+\begin{enumerate}
+%
+	\item (10 pts) Suppose the researchers obtain noisy answers $z_1, z_2, \ldots, z_n$ from the $n$ study participants. You can assume that \texttt{YES} is encoded as $1$ and \texttt{NO} is encoded as $0$. Explain how the researchers can estimate the true proportion of \texttt{YES} from the noisy answers. Specifically, give formulae for (1) the expected number of \texttt{YES} answers and (2) the variance (or error) of the estimate.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Consider the following definition of (Local) Differential Privacy. 
+	\begin{definition}\label{def:localdp}
+		A randomized algorithm $\mc{F}$ which takes input in some set $X$ satisfies $\varepsilon$-{\em differential privacy} (for some $\varepsilon > 0$) if for any two input records $x \in X$, $x' \in X$  and any output $z \in {\rm Range}(\mc{F})$:
+			\[ \pr{z = \mc{F}(x)} \leq e^\varepsilon \pr{z = \mc{F}(x')} \ . \]
+	\end{definition}
+	
+	Does the noisy answer algorithm satisfy~\cref{def:localdp}? Produce a proof or a counter-example. If it does, also give an expression for $\varepsilon$ in terms of $p$.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Now consider the following (more general) variant of the algorithm.
+	
+	\medskip
+%\begin{figure}
+\fbox{%
+    \parbox{0.915\textwidth}{%
+    \centering
+\noindent {\sf GeneralizedNoisyAnswer(\texttt{true\_answer}, $p, p' \in (0,1)$):}
+%
+\smallskip
+\begin{itemize}[nolistsep,noitemsep]
+	\item If \texttt{true\_answer} is \texttt{NO}, then:
+		\begin{itemize}
+			\item With probability $p$ return \texttt{NO}
+			\item With probability $1-p$ return \texttt{YES}
+		\end{itemize}
+	\item Else (if \texttt{true\_answer} is \texttt{YES}), then:
+		\begin{itemize}
+			\item With probability $p'$ return \texttt{NO}
+			\item With probability $1-p'$ return \texttt{YES}
+		\end{itemize}
+\end{itemize} }}%
+
+	\medskip
+	Prove that this general variant satisfies $\varepsilon$-(local) differential privacy~(\cref{def:localdp}). Give an expression for $\varepsilon$ in terms of $p$ and $p'$.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Suppose we can arbitrarily set $p$ and $p'$. Explain the trade-off between minimizing $\varepsilon$ and minimizing the error between the true answers and the one estimated from noisy answers.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+
+\newpage
+\section*{Problem 3: Privacy \& Sampling (30 pts)}
+%
+Consider the data set shown in~\cref{tbl:pr3data} and the function $f(\rv{x}) = {\rm mode}(\rv{x})$. Here the mode of a dataset is $0$ if the proportion of individuals who are HIV negative (-) is higher than $0.5$, $1$ otherwise.
+%
+\begin{table}[h]
+	\centering
+	\begin{tabular}{l|c|c|}
+	\cline{2-3}
+	                                        & \multicolumn{2}{c|}{HIV} \\ \cline{2-3} \cline{2-3} 
+	                                        & +          & -           \\ \hline
+	\multicolumn{1}{|c|}{\# of individuals} & 7          & 23          \\ \hline
+	\end{tabular}
+	\caption{Data set.}
+	\label{tbl:pr3data}
+\end{table}
+%
+
+We are interested in various ways of designing a differentially private mechanism to compute $f$ on an arbitrary data set of the same form as the one in~\cref{tbl:pr3data}. 
+
+%
+\begin{enumerate}
+%
+	\item (2 pts) What is the {\em local} sensitivity of $f$ (with respect to the data set shown in~\cref{tbl:pr3data})? 
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+		\item (2 pts) What is the global sensitivity of $f$? (Justify your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	\item (3 pts) Consider the mechanism defined by $\mc{F}(\rv{x}) = f(\rv{x})$. Does this mechanism satisfy $\varepsilon$-differential privacy? Why or why not?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+Now consider your answers to the previous questions. We are interested in using Laplace noise to obtain a $\varepsilon$-differentially private mechanism for $f$.
+%
+\begin{enumerate}\setcounter{enumi}{3}
+%
+	\item (3 pts) Explain how you could add Laplace noise to obtain $\varepsilon$-differential privacy for $f$. Call the resulting mechanism $\mc{F}$.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (5 pts) Now consider the following post-processing step (after adding Laplace noise as you explained): return $0$ if $\mc{F}(\rv{x}) < 0.5$ and $1$ otherwise. If the data set $\rv{x}$ is such that $f(\rv{x}) = 1$, what is the probability that (after the post-processing step) the output is $0$? What do you conclude about this mechanism?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Can you come up with a different $\varepsilon$-differential privacy mechanism for $f$ that adds Laplace noise but provides more accurate outputs?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Finally, consider the following mechanism.
+	
+		\medskip
+\fbox{%
+    \parbox{0.965\textwidth}{%
+    \centering
+\noindent {\sf SampleAndComputeMode(data set $\rv{x}$, $p \in (0,1)$):}
+%
+\smallskip
+\begin{itemize}[nolistsep,noitemsep]
+	\item Let $\mc{M}$ be a $\varepsilon$-differentially private mechanism to compute the mode of a data set.
+	\item Let $\rv{s}$ be the data set obtained by independently selecting each record of $\rv{x}$ with probability $p$. (For each record, we flip a coin with probability of heads $p$, if heads then we add this record to $\rv{s}$, otherwise we do not.)
+
+	\item return $\mc{M}(\rv{s})$.
+\end{itemize} }}%
+	\medskip
+	
+	\noindent Prove that \textsf{SampleAndComputeMode()} satisfies $\varepsilon'$-differential privacy and give an expression for $\varepsilon'$ in terms of $p$ and $\varepsilon$.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+
+\newpage
+\section*{Problem 4: Implementing DP Mechanisms (25 pts)}
+%
+For this problem you will implement several differential privacy mechanisms we talked about in class. Please use the comments in the Python files provided to guide you in the implementation. 
+
+For this question, we will use the dataset \texttt{data/ds.csv}. It contains pairs of age and yearly income for several individuals. For the purpose of calculating sensitivity, assume that the age range for any individual is [16, 100] and the yearly income range is [0, 1000000].
+
+%
+\begin{enumerate}
+%
+	\item (5 pts) Fill in the implementation of \texttt{laplace\_mech()}, \texttt{gaussian\_mech()}. Also fill in the (global) sensitivity in the \texttt{mean\_age\_query()} function. 
+	
+	You can test your implementation by running: '\texttt{python3 hw1.py problem4.1}'.
+	
+	How close are the noisy answers to the true answer?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	
+	\item (5 pts) Complete the implementation of the \texttt{dp\_accuracy\_plot()} and run it for $\varepsilon=0.1, 0.5, 1.0, 5.0$ on \texttt{mean\_age\_query()}. Paste the plots below.
+	
+	To run the code: '\texttt{python3 hw1.py problem4.2 <epsilon>}'. By default, figures are saved in \texttt{./plots} and named based on the value of $\varepsilon$.
+	
+	What do you conclude?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Implement the function called \texttt{budget\_plot()}. Use it to produce a plot of the budget of naive composition and advanced composition (refer to the course materials for details) when using \texttt{gaussian\_mech()} to perform \texttt{mean\_age\_query()} $m>1$ times. Plot the naive composition and advanced composition budgets (i.e., total $\varepsilon$) for varying $m$ from $1$ to $100$ keeping $\delta \leq 2^{-30}$. Paste the plot below. For what values of $n$ is naive composition better than advanced composition? (Justify your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	\item (10 pts) Finally, suppose we want to compute the average ratio of yearly income and age in the dataset, i.e., how many extra dollars does one earn for an increase of one year of age (on average). Consider two ways of performing this query with differential privacy:
+	\begin{enumerate}[label=(\alph*)]
+		\item Compute the (global) sensitivity of this query (\texttt{income\_per\_age\_query()}) and use the Laplace mechanism. 
+		\item Use the Laplace mechanism to compute the mean yearly income. Use the Laplace mechanism to compute the mean age. Divide the two (noisy) results to obtain the ratio. 
+	\end{enumerate}
+	
+	Implement this functionality in \texttt{income\_per\_age\_comp()}. Feel free to modify the signature of \texttt{income\_per\_age\_comp()} and the corresponding code in \texttt{main()}. Set $\varepsilon = 1$. Paste the comparison plot below. 
+	
+	What do you conclude?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+\newpage
+\section*{[Bonus] Problem 5: Privacy with Binomial Noise (20 pts)}
+%
+
+Suppose we are interested in non-negative count functions $f$. For example $f$ is the number of records in the dataset which satisfy some property $P$. Consider the mechanism $\mc{F}(\rv{x}) = f(\rv{x}) + B$, where $B \sim {\rm Binom}(n, p) - \mathbb{E}[{\rm Binom}(n, p)]$. Here $n = |\rv{x}| > 0$ is the size of the dataset and $p \in (0,1)$ is a parameter. In other words $\mc{F}$ adds noise from the binomial distribution but centered at 0.
+
+
+%
+\begin{enumerate}
+%
+	\item (2 pts) How would you set the value of $p$? (Explain your answer.)
+
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (3 pts) Under what condition(s) does $\mc{F}$ satisfy $\varepsilon$-differential privacy? (Justify your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (10 pts) Prove that $\mc{F}$ satisfies $(\varepsilon,\delta)$-differential privacy as long as $p \neq 0, 1$. 
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (5 pts) Characterize the trade-off between $\varepsilon$ and $\delta$.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+			
+		
+%
+\end{enumerate}
+
+\end{document}
