@@ -124,7 +124,7 @@ def setup_session(verbose=False):
 
     # feel free to customize the session to your specific environment
     #config = tf.ConfigProto(device_count={'GPU': 1, 'CPU': 1})
-    sess = tf.Session(config=tf.ConfigProto(log_device_placement=verbose))
+    sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=verbose))
     #sess = tf.Session(config=config)
     keras.backend.set_session(sess)
 
