@@ -23,6 +23,8 @@ import nets
 
 import attacks
 
+import warnings
+warnings.simplefilter("ignore")
 ## os / paths
 def ensure_exists(dir_fp):
     if not os.path.exists(dir_fp):
@@ -224,10 +226,18 @@ def main():
                                                                                     100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
 
     query_target_model = lambda x: target_model.predict(x)
+    predictions = query_target_model(x_test)
 
     if probno == 1: ## problem 1
         assert len(sys.argv) == 5, 'Invalid extra argument'
 
+        #to find which ones are misclassified 
+        result = np.absolute(y_test - predictions)
+        mid = result.mean()
+        print(mid)
+        idx = [i for i, j in enumerate(result) if np.where(j < mid) ]
+        for item in idx:
+	        plot_image(x_test[item], fname='out_{}.png'.format(item), show=False)
         ## TODO ##
         ## Insert your code here
 
@@ -297,12 +307,17 @@ def main():
 
         ## TODO ##
         ## Insert your code here to compute the best threshold (for loss_attack2)
-        raise NotImplementedError()
-
-
+        # raise NotImplementedError()
+        accuracy_list = []
+        threshold = [0.1,0.3,0.5,0.7,0.9]
+        for item  in threshold:
+	        in_or_out_pred = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
+	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+	        accuracy_list.append((accuracy,item))
+        print(accuracy_list)
         ## TODO ##
         ## Insert your code here to compute the best threshold (for posterior_attack)
-        raise NotImplementedError()
+        # raise NotImplementedError()
 
     elif probno == 4:  ## problem 4
 
