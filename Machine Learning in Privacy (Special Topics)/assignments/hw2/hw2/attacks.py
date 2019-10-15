@@ -138,9 +138,13 @@ def do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train
     loss_vec = loss_fn(y_targets, pv)
 
     in_or_out_pred = np.zeros((x_targets.shape[0],))
+
+    gauss_train = stats.norm(mean_train_loss, std_train_loss).pdf(loss_vec)
+    gauss_test = stats.norm(mean_test_loss, std_test_loss).pdf(loss_vec)
     
-    in_or_out_pred = np.where(np.absolute(loss_vec - mean_train_loss)< np.absolute(loss_vec - mean_test_loss), 1, 0)
+    # in_or_out_pred = np.where(np.absolute(loss_vec - mean_train_loss)< np.absolute(loss_vec - mean_test_loss), 1, 0)
     
+    in_or_out_pred = np.where(gauss_train > gauss_test, 1, 0)
 
     return in_or_out_pred
 
@@ -165,7 +169,7 @@ def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_trai
 
     gauss_cdf = stats.norm(mean_train_loss, std_train_loss).cdf(loss_vec)
 
-    in_or_out_pred = np.where( gauss_cdf > threshold, 1, 0)
+    in_or_out_pred = np.where( gauss_cdf < threshold, 1, 0)
     
 
     return in_or_out_pred
@@ -181,7 +185,7 @@ def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_trai
 ##  Output:
 ##  - in_or_out_pred: in/out prediction for each target
 """
-def do_posterior_attack(x_targets, y_targets, query_target_model, threshold=0.9):
+def do_posterior_attack(x_targets, y_targets, query_target_model, threshold):
 
     ## TODO ##
     ## Insert your code here
