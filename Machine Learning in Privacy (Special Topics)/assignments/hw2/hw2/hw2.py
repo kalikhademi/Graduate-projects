@@ -21,7 +21,7 @@ import os
 # our neural network architectures
 import nets
 
-import attacks
+# import attacks
 
 ## os / paths
 def ensure_exists(dir_fp):
@@ -224,10 +224,18 @@ def main():
                                                                                     100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
 
     query_target_model = lambda x: target_model.predict(x)
+    predictions = query_target_model(x_test)
 
     if probno == 1: ## problem 1
         assert len(sys.argv) == 5, 'Invalid extra argument'
 
+        #to find which ones are misclassified 
+        result = np.absolute(y_test - predictions)
+        mid = result.mean()
+        print(mid)
+        idx = [i for i, j in enumerate(result) if np.where(j < mid) ]
+        for item in idx:
+	        plot_image(x_test[item], fname='out_{}.png'.format(item), show=False)
         ## TODO ##
         ## Insert your code here
 

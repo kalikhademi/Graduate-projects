@@ -73,8 +73,9 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
     for i in range(0, num_shadow):
         ## TODO ##
         ## Insert your code here to train the ith shadow model and obtain the corresponding training data for the attack model
+        
         ## You can use random_subdataset() to sample a subdataset from aux and add_to_list() to populate 'class_train_list'
-        raise NotImplementedError()
+        # raise NotImplementedError()
 
     # now train the models
     attack_models = []
