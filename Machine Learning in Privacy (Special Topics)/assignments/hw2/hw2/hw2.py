@@ -23,6 +23,8 @@ import nets
 
 # import attacks
 
+import warnings
+warnings.simplefilter("ignore")
 ## os / paths
 def ensure_exists(dir_fp):
     if not os.path.exists(dir_fp):
@@ -305,12 +307,22 @@ def main():
 
         ## TODO ##
         ## Insert your code here to compute the best threshold (for loss_attack2)
-        raise NotImplementedError()
+        # raise NotImplementedError()
+        accuracy_list = []
+        accuracy_posterior=[]
+        threshold = [0.1,0.3,0.5,0.7,0.9]
+        for item  in threshold:
+	        in_or_out_pred = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
+	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+	        accuracy_list.append((accuracy,item))
+
+	        #
+        print(accuracy_list)
 
 
         ## TODO ##
         ## Insert your code here to compute the best threshold (for posterior_attack)
-        raise NotImplementedError()
+        # raise NotImplementedError()
 
     elif probno == 4:  ## problem 4
 

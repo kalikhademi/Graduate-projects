@@ -77,6 +77,11 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
         ## You can use random_subdataset() to sample a subdataset from aux and add_to_list() to populate 'class_train_list'
         # raise NotImplementedError()
 
+		## You can use random_subdataset() to sample a subdataset from aux and add_to_list() to populate 'class_train_list'
+        # raise NotImplementedError()
+        class_train_list[i] = np.vstack((class_train_list[i], random_subdataset(x_aux,y_aux)))
+
+
     # now train the models
     attack_models = []
 
@@ -139,9 +144,12 @@ def do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train
 
     in_or_out_pred = np.zeros((x_targets.shape[0],))
 
-    ## TODO ##
-    ## Insert your code here
-    raise NotImplementedError()
+    gauss_train = stats.norm(mean_train_loss, std_train_loss).pdf(loss_vec)
+    gauss_test = stats.norm(mean_test_loss, std_test_loss).pdf(loss_vec)
+    
+    # in_or_out_pred = np.where(np.absolute(loss_vec - mean_train_loss)< np.absolute(loss_vec - mean_test_loss), 1, 0)
+    
+    in_or_out_pred = np.where(gauss_train > gauss_test, 1, 0)
 
     return in_or_out_pred
 
@@ -158,15 +166,16 @@ def do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train
 ##  Output:
 ##  - in_or_out_pred: in/out prediction for each target
 """
-def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, threshold=0.9):
+def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, threshold):
     pv = query_target_model(x_targets)
     loss_vec = loss_fn(y_targets, pv)
 
     in_or_out_pred = np.zeros((x_targets.shape[0],))
 
-    ## TODO ##
-    ## Insert your code here
-    raise NotImplementedError()
+    gauss_cdf = stats.norm(mean_train_loss, std_train_loss).cdf(loss_vec)
+
+    in_or_out_pred = np.where( gauss_cdf < threshold, 1, 0)
+    
 
     return in_or_out_pred
 
@@ -181,7 +190,7 @@ def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_trai
 ##  Output:
 ##  - in_or_out_pred: in/out prediction for each target
 """
-def do_posterior_attack(x_targets, y_targets, query_target_model, threshold=0.9):
+def do_posterior_attack(x_targets, y_targets, query_target_model, threshold):
 
     ## TODO ##
     ## Insert your code here
