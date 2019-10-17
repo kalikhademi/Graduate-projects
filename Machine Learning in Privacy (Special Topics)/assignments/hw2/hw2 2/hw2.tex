@@ -1,0 +1,378 @@
+\begin{filecontents}{refs.bib}
+@inproceedings{shokri2017membership,
+  title={Membership inference attacks against machine learning models},
+  author={Shokri, Reza and Stronati, Marco and Song, Congzheng and Shmatikov, Vitaly},
+  booktitle={2017 IEEE Symposium on Security and Privacy (SP)},
+  pages={3--18},
+  year={2017},
+  organization={IEEE}
+}
+\end{filecontents}
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[letterpaper,margin=0.8in,nohead]{geometry}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage{url}
+\usepackage{breakurl}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={red},
+    citecolor={red},
+    urlcolor={blue}
+}
+
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{scrextend}
+\usepackage{enumitem}
+\usepackage{url}
+
+\usepackage{filecontents}
+%\usepackage{natbib}
+%\nobibliography*
+
+\usepackage{caption}
+\usepackage{graphicx}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+\newenvironment{answer}{\em \color{blue} \begin{adjustwidth}{1cm}{1cm}}{\end{adjustwidth}}
+
+% math
+\usepackage{amsthm,amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\mc}[1]{\mathcal{#1}}	% Mechanisms / Algorithms
+\newcommand{\rv}[1]{\mathbf{#1}}    % Random variable
+
+\newcommand{\pr}[1]{\mathrm{Pr}\{#1\}} % Probability
+
+\newtheorem{corollary}{\bf Corollary}%[theorem]
+\newtheorem{lemma}{\bf Lemma}%[theorem]
+\newtheorem{definition}{\bf Definition}%[section]
+
+\newtheorem{observation}{\bf Observation}%[theorem]
+
+
+
+% load cleveref last!
+\usepackage[capitalise]{cleveref}
+
+\crefname{observation}{Observation}{Observations}
+
+
+\begin{document}
+
+\title{CIS 6930: Privacy \& Machine Learning (Fall 2019) \\Homework 2 --- Privacy Attacks on Machine Learning Models}
+
+%% This is an individual assignment!!
+%% TODO: put your name here!
+\author{Name: Your Name Here}
+
+\maketitle
+
+\begin{center}
+	\color{red}\bf This is an individual assignment!
+\end{center}
+
+\section*{Instructions}
+%
+
+Please read the instructions and questions carefully. Write your answers directly in the space provided. Compile the tex document and hand in the resulting PDF.
+
+In this assignment you will implement and evaluate several membership inference attacks in Python. Use the code skeleton provided and submit the completed source file(s) alongside with the PDF.\footnote{You are encouraged to use Python3. You may use HiPerGator or your own system. This assignment can be done with or without GPUs. If you want to use a GPU, please adjust \texttt{setup\_session()} in \texttt{hw2.py} accordingly.} {\em Note: bonus points you get on this homework *do* carry across assignments/homework.}
+
+
+\subsection*{Assignment Files}
+%
+The assignment archive contains the following Python source files:
+%
+\begin{itemize}[nolistsep]
+	\item \texttt{hw2.py}. This file is the main assignment source file.
+	\item \texttt{nets.py}. This file defines the neural network architectures and some useful related functions. 
+	\item \texttt{attacks.py}. This file contains attack code used in the assignment.
+\end{itemize}
+
+\medskip
+
+\noindent
+\underline{Note:} You are encouraged to take a look at the provided files. This may help you successfully complete the assignment.
+
+
+\newpage
+\section*{Problem 1: Getting Familiar with Neural Networks (25 pts)}
+%
+
+For this problem, you will train neural networks to do MNIST classification. You will get familiar with the provided code skeleton and answer some questions about what you observe when running the code. 
+
+To run the code for this problem, use the following command.
+%
+\begin{Verbatim}
+	python3 hw2.py problem1 <nn_desc> <target_train_size> <num_epoch>
+\end{Verbatim}
+%
+
+Here \texttt{<nn\_desc>} is a neural network description string (no whitespaces). It can take two forms: \texttt{simple,<num\_hidden>,<l2\_reg\_const>} or \texttt{deep}. The latter specifies the deep neural network architecture (see \texttt{get\_deeper\_classifier()} in \texttt{nets.py} for details), whereas the former specifies a simple neural network architecture (see \texttt{get\_simple\_classifier()} in \texttt{nets.py} for details) with one hidden layer with \texttt{<num\_hidden>} neurons and an $L_2$ regularization constant of \texttt{<l2\_reg\_const>}. Also, \texttt{<target\_train\_size>} is the number of records in the target model's training dataset and \texttt{<num\_epoch>} is the number of epoch to train for.
+
+
+For example, suppose you run the following command.
+%
+\begin{Verbatim}
+	python3 hw2.py problem1 simple,32,0.001 1000 50
+\end{Verbatim}
+This will train the target model on $1000$ MNIST data records (i.e., images) for $50$ epochs. The target model architecture is a neural network with a single hidden layer of $32$ neurons which uses $L_2$ regularization with a constant of $0.001$.\footnote{By default, for problem 1, the code will provide detailed output about the training process and the accuracy of the target model. To change this behavior, edit line 180 of \texttt{hw2.py}.} (The loss function is the categorical cross entropy.)
+
+
+
+\begin{enumerate}
+	\item (5 pts) Run the code using the command provided above. What is the training accuracy? What is the test accuracy? Propose a simple metric of overfitting. How overfitted is the target model you just trained (according to your metric)?
+
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Run the code to train the target model while varying the number of training epochs (from 10 to 1000), the size of the training data (from 100 to 2000), the number of hidden layer neurons (from 32 to 1024), and the regularization constant (from 0.0 to 0.01). 
+		
+		\medskip\noindent
+		What do you observe? For what combination of parameters is the train/test accuracy the highest? For each parameter you varied, explain its impact on accuracy and overfitting (according to your metric).
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Take the best performing architecture you found above. For this question, we are interested in inputs that are misclassified by the target network. Use the provided \texttt{plot\_image()} function to plot some examples of test images that are misclassified. Paste the plot below. Do you notice anything?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\medskip\noindent Now repeat the same procedure with the deep architecture. Does it change your answer?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	
+\end{enumerate}
+
+\newpage
+\section*{Problem 2: Implementing the Shokri et al. Attack (30 pts)}
+%
+
+For this problem you will implement the Shokri et al.~\cite{shokri2017membership} attack. Put your code in the \texttt{shokri\_attack\_models()} function which is located in \texttt{attacks.py}. The companion function \texttt{do\_shokri\_attack()} is already provided so you do not have to implement it. 
+
+Refer to the course slides and/or the paper~\cite{shokri2017membership} for instructions on how to implement the attack. Comments in the provided code skeleton are here to guide your implementation.
+
+To run the code for this problem, use the following.
+%
+\begin{Verbatim}
+	python3 hw2.py problem2 <nn_desc> <train_sz> <num_epoch> <num_shadow> <attack_model>
+\end{Verbatim}
+%
+Here \texttt{<num\_shadow>} is the number of shadow models to use and \texttt{<attack\_model>} is a string denoting the attack model type (scikit-learn). See the code for options.
+
+
+\bigskip
+\noindent Answer the following questions.
+
+%
+\begin{enumerate}
+%
+	\item (10 pts) 
+
+	Once you have implemented the attack, run the following command:
+	\begin{Verbatim}
+		python3 hw2.py problem2 simple,32,0.0 1000 50 10 LR
+	\end{Verbatim}	
+	
+	What is the accuracy of the attack? What is the advantage?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Run the attack on the most overfitted target model (according to the parameters you found in the previous problems and your overfitting metric). Also run the attack on the least overfitted but best performing  target model. Compare the attack accuracy and advantage in both cases. What do you notice? According to your experiments what are the factors that lead to attack success? (Justify your answer.)
+	
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) 
+
+	Now vary the attack model type. What do you notice? What are the best/worst performing attack model types?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+
+\newpage
+\section*{Problem 3: More attacks (30 pts)}
+%
+
+For this problem you will implement three more attacks.
+
+\begin{itemize}
+
+	\item Loss attack (\texttt{do\_loss\_attack()}): for this attack you are given the mean and standard deviation of the target model's training loss and testing loss. You can assume that the loss follows a Gaussian distribution. 
+	
+	\medskip \noindent The attack works as follows: given a target record, measure its loss on the target model and then decide (IN or OUT) based on which loss distribution the sample most likely comes from.
+	
+	\item Loss attack2 (\texttt{do\_loss\_attack2()}): for this attack you are given only the mean and standard deviation of the target model's training loss. In addition, the attack function takes a threshold parameter. Again, you can assume that the loss follows a Gaussian distribution.
+	
+	\medskip \noindent The attack works as follows: given a target record, measure its loss on the target model and then decide (IN or OUT) based on whether the probability of obtaining a loss value as extreme or less extreme than that is {\em lower} than the threshold.
+	
+	\item Posterior attack (\texttt{do\_posterior\_attack()}): for this attack you only have the ability to query the target model. You are also given a threshold parameter. 
+	
+	\medskip \noindent The attack works as follows: given a target record, query it on the target model to obtain its posterior (i.e., the predicted probability over the true class label) and then decide (IN or OUT) based on whether the posterior is {\em greater} than the threshold.
+
+\end{itemize}
+
+
+\medskip \noindent Implement all three attacks and answer the following questions.
+
+%
+\begin{enumerate}
+%
+	\item (5 pts) Pick a set of parameters. What is the attack accuracy and advantage of the loss attack? Specify the command you ran!
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Loss attack2 takes a threshold parameter. What is the optimal threshold value? Justify your answer. (Hint: you can write some code to find out experimentally.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	\item (10 pts) The posterior attack takes a threshold parameter. What is the optimal threshold value? Justify your answer. (Hint: you can write some code to find out experimentally.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (5 pts) Which of the three attacks performs best?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+
+\newpage
+\section*{Problem 4: Overfitting \& Other factors (15 pts)}
+%
+For this problem, we are interested in understanding how much of a role overfitting plays in the success of the attack (compared to other factors).
+
+%
+\begin{enumerate}
+%
+	\item (10 pts) Play with the neural network architecture and other parameters to train target models with varying level of overfitting (according to your metric from Problem 1). In each case, run all four attacks and record the accuracy and advantage. Paste the results below as plot(s) or table(s). What do you observe? 
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+
+	\medskip \noindent Can you find significantly different architectures / sets of parameters with a similar overfitting level but with different attack success? What do you conclude?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (5 pts) Now consider target images which your attacks successfully infer the membership status of. Plot some of them with \texttt{plot\_image()} and paste the plot below. What do you notice?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+\newpage
+\section*{[Bonus] Problem 5: Membership Inference on CIFAR-100 (20 pts)}
+%
+
+Repeat problems 1 through 4 but using CIFAR-100 as a dataset. For this, you will need to use suitable neural network architectures. Explain/Justify your choices!
+
+%
+\begin{enumerate}
+%
+	\item (15 pts) Repeat Problems 1, 2, 3, and 4 here.
+
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	
+	\item (5 pts) Explain how your answers have changed. Are CIFAR-100 records more or less vulnerable to membership inference attacks (than MNIST)? Why? (Justify your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+
+\bibliographystyle{acm}
+\bibliography{refs}
+
+\end{document}

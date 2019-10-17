@@ -20,12 +20,9 @@ import os
 
 # our neural network architectures
 import nets
-import collections
 
 import attacks
 
-import warnings
-warnings.simplefilter("ignore")
 ## os / paths
 def ensure_exists(dir_fp):
     if not os.path.exists(dir_fp):
@@ -127,7 +124,7 @@ def setup_session(verbose=False):
 
     # feel free to customize the session to your specific environment
     #config = tf.ConfigProto(device_count={'GPU': 1, 'CPU': 1})
-    sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=verbose))
+    sess = tf.Session(config=tf.ConfigProto(log_device_placement=verbose))
     #sess = tf.Session(config=config)
     keras.backend.set_session(sess)
 
@@ -161,7 +158,6 @@ def get_targets(x_in, y_in, x_out, y_out, sz=5000):
     in_out_targets = in_out_temp[perm,:]
 
     return x_targets, y_targets, in_out_targets
-
 
 
 ## this is the main
@@ -228,22 +224,12 @@ def main():
                                                                                     100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
 
     query_target_model = lambda x: target_model.predict(x)
-    predictions = query_target_model(x_test)
 
     if probno == 1: ## problem 1
         assert len(sys.argv) == 5, 'Invalid extra argument'
 
-        #to find which ones are misclassified
-        # idx= []
-        # result =[]
-        # predictions = predictions.round()
-        # idx =(predictions == y_test).all(axis=1)
-        # # print(collections.Counter(idx))
-        # # print(idx)
-        # for i in range(len(idx)):
-        # 	if idx[i] == False:
-	       #  	plot_image(x_test[i], fname='out_{}.png'.format(i), show=False)
-        
+        ## TODO ##
+        ## Insert your code here
 
     elif probno == 2: ## problem 2
 
@@ -311,22 +297,12 @@ def main():
 
         ## TODO ##
         ## Insert your code here to compute the best threshold (for loss_attack2)
-        # raise NotImplementedError()
-        accuracy_list = []
-        accuracy_posterior=[]
-        threshold = [0.1,0.3,0.5,0.7,0.9]
-        for item  in threshold:
-	        in_or_out_pred = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
-	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
-	        accuracy_list.append((accuracy,item))
-
-	        #
-        print(accuracy_list)
+        raise NotImplementedError()
 
 
         ## TODO ##
         ## Insert your code here to compute the best threshold (for posterior_attack)
-        # raise NotImplementedError()
+        raise NotImplementedError()
 
     elif probno == 4:  ## problem 4
 

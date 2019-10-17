@@ -71,9 +71,10 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
                 class_train_list[label] = np.vstack((class_train_list[label], dv[:,col_idx]))
 
     for i in range(0, num_shadow):
-        data = random_subdataset(x_aux,y_aux,target_train_size)
-        add_to_list(data)
-
+        ## TODO ##
+        ## Insert your code here to train the ith shadow model and obtain the corresponding training data for the attack model
+        ## You can use random_subdataset() to sample a subdataset from aux and add_to_list() to populate 'class_train_list'
+        raise NotImplementedError()
 
     # now train the models
     attack_models = []
@@ -137,12 +138,9 @@ def do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train
 
     in_or_out_pred = np.zeros((x_targets.shape[0],))
 
-    gauss_train = stats.norm(mean_train_loss, std_train_loss).pdf(loss_vec)
-    gauss_test = stats.norm(mean_test_loss, std_test_loss).pdf(loss_vec)
-    
-    # in_or_out_pred = np.where(np.absolute(loss_vec - mean_train_loss)< np.absolute(loss_vec - mean_test_loss), 1, 0)
-    
-    in_or_out_pred = np.where(gauss_train > gauss_test, 1, 0)
+    ## TODO ##
+    ## Insert your code here
+    raise NotImplementedError()
 
     return in_or_out_pred
 
@@ -159,16 +157,15 @@ def do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train
 ##  Output:
 ##  - in_or_out_pred: in/out prediction for each target
 """
-def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, threshold):
+def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, threshold=0.9):
     pv = query_target_model(x_targets)
     loss_vec = loss_fn(y_targets, pv)
 
     in_or_out_pred = np.zeros((x_targets.shape[0],))
 
-    gauss_cdf = stats.norm(mean_train_loss, std_train_loss).cdf(loss_vec)
-
-    in_or_out_pred = np.where( gauss_cdf < threshold, 1, 0)
-    
+    ## TODO ##
+    ## Insert your code here
+    raise NotImplementedError()
 
     return in_or_out_pred
 
@@ -183,18 +180,10 @@ def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_trai
 ##  Output:
 ##  - in_or_out_pred: in/out prediction for each target
 """
-def do_posterior_attack(x_targets, y_targets, query_target_model, threshold):
+def do_posterior_attack(x_targets, y_targets, query_target_model, threshold=0.9):
 
     ## TODO ##
     ## Insert your code here
-    pv = query_target_model(x_targets)
-    # loss_vec = loss_fn(y_targets, pv)
-
-    in_or_out_pred = np.zeros((x_targets.shape[0],))
-
-    gauss_cdf = stats.norm(mean_train_loss, std_train_loss).cdf(loss_vec)
-
-    in_or_out_pred = np.where( gauss_cdf < threshold, 1, 0)
-   
+    raise NotImplementedError()
 
     return in_or_out_pred
