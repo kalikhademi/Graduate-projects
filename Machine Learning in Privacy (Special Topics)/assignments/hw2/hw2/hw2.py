@@ -162,9 +162,7 @@ def get_targets(x_in, y_in, x_out, y_out, sz=5000):
     return x_targets, y_targets, in_out_targets
 
 
-#find the index of elements in the list of list
-def findItem(theList, item):
-   return [(ind, theList[ind].index(item)) for ind in range(len(theList)) if item in theList[ind]]
+
 ## this is the main
 def main():
 
@@ -234,22 +232,16 @@ def main():
     if probno == 1: ## problem 1
         assert len(sys.argv) == 5, 'Invalid extra argument'
 
-        #to find which ones are misclassified 
-        result,idx =[],[]
-        result = abs(y_test - predictions)
-        mid = result.mean()
-        print(y_test.shape)
-        print(predictions.shape)
-        print(mid)
-        result = np.where(result > mid, 1, 0)
-        print(result.shape)
-        idx.append(findItem(result,'0'))
+        #to find which ones are misclassified
+        idx= []
+        result =[]
+        predictions = predictions.round()
+        idx =(predictions == y_test).all(axis=1)
         print(idx)
-        # print(idx)
-        # for item in idx:
-	        # plot_image(x_test[item], fname='out_{}.png'.format(item), show=False)
-        ## TODO ##
-        ## Insert your code here
+        for i in range(len(idx)):
+        	if idx[i] == False:
+	        	plot_image(x_test[idx[i]], fname='out_{}.png'.format(idx[i]), show=False)
+        
 
     elif probno == 2: ## problem 2
 

@@ -72,17 +72,17 @@ def train_model(model, x_train, y_train, x_test, y_test, num_epochs, batch_size=
 
     test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=verbose)
 
-    if verbose:
-        fig = plt.figure()
-        plt.plot(history.history['accuracy'])
-        plt.plot(history.history['val_accuracy'])
-        plt.ylabel('Accuracy')
-        plt.xlabel('Epoch')
-        plt.legend(['Training', 'Testing'], loc='best')
-        plt.show()
-        print("the train accuracy is:",train_accuracy*100.0)
-        print("the test accuracy is:",test_accuracy*100.0)
-        # print('Model was trained for {} epochs. Train accuracy: {:.1f}%, Test accuracy: {:.1f}%'.format(num_epochs, train_accuracy*100.0, test_accuracy*100.0))
+    # if verbose:
+    #     fig = plt.figure()
+    #     plt.plot(history.history['accuracy'])
+    #     plt.plot(history.history['val_accuracy'])
+    #     plt.ylabel('Accuracy')
+    #     plt.xlabel('Epoch')
+    #     plt.legend(['Training', 'Testing'], loc='best')
+    #     plt.show()
+    #     print("the train accuracy is:",train_accuracy*100.0)
+    #     print("the test accuracy is:",test_accuracy*100.0)
+    #     # print('Model was trained for {} epochs. Train accuracy: {:.1f}%, Test accuracy: {:.1f}%'.format(num_epochs, train_accuracy*100.0, test_accuracy*100.0))
 
     return train_loss, train_accuracy, test_loss, test_accuracy
 
