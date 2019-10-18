@@ -318,11 +318,26 @@ def main():
 	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
 	        accuracy_list.append(accuracy)
         # print(accuracy_list)
+        accuracy_list = [ round(elem, 2) for elem in accuracy_list ]
         idx = accuracy_list.index(max(accuracy_list))
         best_threshold_lossattack2 = threshold[idx]
 
+        print("the best threshold for loss attack 2 is:", best_threshold_lossattack2)
         ## Insert your code here to compute the best threshold (for posterior_attack)
+        plot_list =[]
+        for i in range(len(accuracy_list)):
+            plot_list.append((threshold[i],accuracy_list[i]))
+
+        labels, ys = zip(*plot_list)
+        xs = np.arange(len(labels)) 
+        width =  0.5
+
+        plt.bar(xs, ys, width, align='center')
+
+        plt.xticks(xs, labels) #Replace default x-ticks with xs, then replace xs with labels
+        plt.yticks(ys)
         
+        plt.savefig('Lossattack2_threshold.png')
 
     elif probno == 4:  ## problem 4
 
