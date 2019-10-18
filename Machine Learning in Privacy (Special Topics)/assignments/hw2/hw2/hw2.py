@@ -302,44 +302,94 @@ def main():
         mean_test_loss = np.mean(loss_test_vec)
         std_test_loss = np.std(loss_test_vec)
 
-
+        #loss attack
         in_or_out_pred = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
                                                 mean_test_loss, std_test_loss)
         accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
 
         print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
 
-        ## TODO ##
-        ## Insert your code here to compute the best threshold (for loss_attack2)
-        # raise NotImplementedError()
+        #picking the best threshold for the loss atack2
         accuracy_list = []
         accuracy_posterior=[]
         threshold = [0.1,0.3,0.5,0.7,0.9]
         for item  in threshold:
 	        in_or_out_pred = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
 	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
-	        accuracy_list.append((accuracy,item))
+	        accuracy_list.append(accuracy)
+        # print(accuracy_list)
+        idx = accuracy_list.index(max(accuracy_list))
+        best_threshold_lossattack2 = threshold[idx]
 
-	        #
-        print(accuracy_list)
-
-
-        ## TODO ##
         ## Insert your code here to compute the best threshold (for posterior_attack)
-        # raise NotImplementedError()
+        
 
     elif probno == 4:  ## problem 4
 
         ## TODO ##
         ## Insert your code here [you can use plot_image()]
-        raise NotImplementedError()
+        # raise NotImplementedError()
+
+        #Do the shokri attack
+        if attack_model_str == 'LR':
+            from sklearn.linear_model import LogisticRegression
+            attack_model_fn = lambda : LogisticRegression(solver='lbfgs')
+        elif attack_model_str == 'DT':
+            from sklearn.tree import DecisionTreeClassifier
+            attack_model_fn = DecisionTreeClassifier
+        elif attack_model_str == 'RF':
+            from sklearn.ensemble import RandomForestClassifier
+            attack_model_fn = RandomForestClassifier
+        elif attack_model_str == 'NB':
+            from sklearn.naive_bayes import GaussianNB
+            attack_model_fn = GaussianNB
+        elif attack_model_str == 'MLP':
+            from sklearn.neural_network import MLPClassifier
+            attack_model_fn = lambda : MLPClassifier(max_iter=500)
+        elif attack_model_str == 'SVM':
+            from sklearn.svm import LinearSVC
+            attack_model_fn = LinearSVC
+        else:
+            assert False, '{} is not a valid attack model type!'.format(attack_model_str)
+
+        create_model_fn = target_model_train_fn
+        train_model_fn = lambda model, x, y: nets.train_model(model, x, y, None, None, num_epochs, verbose=False)
+
+        attack_models = attacks.shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train_model_fn,
+                                                    num_shadow=num_shadow, attack_model_fn=attack_model_fn)
+
+
+        in_or_out_pred = attacks.do_shokri_attack(attack_models, x_targets, y_targets, query_target_model)
+        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+
+        print('Shokri attack ({}) accuracy, advantage: {:.1f}%, {:.2f}'.format(attack_model_str, 100.0*accuracy, advantage))
+        #Do Loss Attack
+        loss_fn = nets.compute_loss
+        loss_train_vec = loss_fn(y_train, target_model.predict(x_train))
+        loss_test_vec = loss_fn(y_test, target_model.predict(x_test))
+
+        mean_train_loss = np.mean(loss_train_vec)
+        std_train_loss = np.std(loss_train_vec)
+        mean_test_loss = np.mean(loss_test_vec)
+        std_test_loss = np.std(loss_test_vec)
+
+        #loss attack
+        in_or_out_pred = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
+                                                mean_test_loss, std_test_loss)
+        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+
+        print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
+        #Do Loss Attack 2
+        in_or_out_pred_loss2 = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
+        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
+        #Do posterior attack
 
     elif probno == 5:  ## problem 5 (bonus)
 
         assert len(sys.argv) >= 5, 'Inconsistent number of arguments'
         ## TODO ##
         ## Insert your code here
-        raise NotImplementedError()
+        # raise NotImplementedError()
 
 if __name__ == '__main__':
     main()

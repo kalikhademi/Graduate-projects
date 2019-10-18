@@ -71,7 +71,8 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
                 class_train_list[label] = np.vstack((class_train_list[label], dv[:,col_idx]))
 
     for i in range(0, num_shadow):
-        data = random_subdataset(x_aux,y_aux,target_train_size)
+        x,y = random_subdataset(x_aux,y_aux,target_train_size)
+        data = np.hstack((x,y))
         add_to_list(data)
 
 
@@ -83,7 +84,7 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
         np.random.shuffle(data)
         x_data = data[:,:-1]
         y_data = data[:,-1]
-
+        # print(data)
         # train attack model
         am = attack_model_fn().fit(x_data, y_data)
         attack_models.append(am)
@@ -189,12 +190,11 @@ def do_posterior_attack(x_targets, y_targets, query_target_model, threshold):
     ## Insert your code here
     pv = query_target_model(x_targets)
     # loss_vec = loss_fn(y_targets, pv)
-
+    print(pv)
     in_or_out_pred = np.zeros((x_targets.shape[0],))
 
-    gauss_cdf = stats.norm(mean_train_loss, std_train_loss).cdf(loss_vec)
-
-    in_or_out_pred = np.where( gauss_cdf < threshold, 1, 0)
+    print(x_targets)
+    print(y_targets)
    
 
     return in_or_out_pred
