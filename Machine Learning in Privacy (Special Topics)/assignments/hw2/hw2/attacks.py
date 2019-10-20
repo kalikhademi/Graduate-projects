@@ -74,6 +74,9 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
         x,y = random_subdataset(x_aux,y_aux,target_train_size)
         data = np.hstack((x,y))
         add_to_list(data)
+        #create shadow models 
+        #get the sub dataset and turn shadow models 
+        #the classification of shadow models are added to the lists. 
 
 
     # now train the models
