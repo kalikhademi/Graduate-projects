@@ -71,12 +71,16 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
                 class_train_list[label] = np.vstack((class_train_list[label], dv[:,col_idx]))
 
     for i in range(0, num_shadow):
-        x,y = random_subdataset(x_aux,y_aux,target_train_size)
-        data = np.hstack((x,y))
-        add_to_list(data)
-        #create shadow models 
-        #get the sub dataset and turn shadow models 
+        shadow_n = create_model_fn()
+        x,y= random_subdataset(x_aux,y_aux,target_train_size) #get the sub dataset and turn shadow models 
+        trainData, testData = x[:target_train_size],x[target_train_size:]
+        trainLabels, testLabels = y[:target_train_size],y[target_train_size:]
         #the classification of shadow models are added to the lists. 
+        shadowTrain = train_model_fn(shadow_n,trainData,trainLabels)
+        print("shokri attack train models: ", shadowTrain)
+        predictions = shadow_n.predict(testData)
+        print(predictions)
+        add_to_list(predictions,testLabels)
 
 
     # now train the models
