@@ -79,7 +79,7 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
         shadowTrain = train_model_fn(shadow_n,trainData,trainLabels)
         print("shokri attack train models: ", shadowTrain)
         predictions = shadow_n.predict(testData)
-        print(predictions)
+        # print(predictions)
         add_to_list(predictions,testLabels)
 
 
