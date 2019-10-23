@@ -339,6 +339,12 @@ def main():
         
         plt.savefig('Lossattack2_threshold.png')
 
+        #posterior attack
+        in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, threshold)
+        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
+
+        print('posterior attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
+
     elif probno == 4:  ## problem 4
 
         ## TODO ##
