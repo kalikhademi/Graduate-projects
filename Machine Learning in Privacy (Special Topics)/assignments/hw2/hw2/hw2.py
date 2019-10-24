@@ -340,16 +340,34 @@ def main():
         plt.savefig('Lossattack2_threshold.png')
 
         #posterior attack
-        in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, threshold)
-        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
+        for item  in threshold:
+	        in_or_out_pred = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, item )
+	        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+	        accuracy_posterior.append(accuracy)
+        # in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, 0.5)
+        # accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
+        accuracy_posterior = [ round(elem, 2) for elem in accuracy_posterior ]
+        idx_post = accuracy_posterior.index(max(accuracy_posterior))
+        best_threshold_posterior = threshold[idx_post]
+        print('posterior attack accuracy, threshold: {:.1f}%, {:.2f}'.format(100.0*accuracy_posterior[idx_post], best_threshold_posterior))
+        ## Insert your code here to compute the best threshold (for posterior_attack)
+        plot_list_posterior =[]
+        for i in range(len(accuracy_posterior)):
+            plot_list_posterior.append((threshold[i],accuracy_posterior[i]))
 
-        print('posterior attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
+        labels, ys = zip(*plot_list_posterior)
+        xs = np.arange(len(labels)) 
+        width =  0.5
 
+        plt.bar(xs, ys, width, align='center')
+
+        plt.xticks(xs, labels) #Replace default x-ticks with xs, then replace xs with labels
+        plt.yticks(ys)
+        
+        plt.savefig('Posterior_threshold.png')
     elif probno == 4:  ## problem 4
 
-        ## TODO ##
-        ## Insert your code here [you can use plot_image()]
-        # raise NotImplementedError()
+        
 
         #Do the shokri attack
         if attack_model_str == 'LR':
@@ -404,13 +422,14 @@ def main():
         in_or_out_pred_loss2 = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
         accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
         #Do posterior attack
+        in_or_out_pred = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, item )
+        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+        accuracy_posterior.append(accuracy)
 
     elif probno == 5:  ## problem 5 (bonus)
 
         assert len(sys.argv) >= 5, 'Inconsistent number of arguments'
-        ## TODO ##
-        ## Insert your code here
-        # raise NotImplementedError()
+        
 
 if __name__ == '__main__':
     main()

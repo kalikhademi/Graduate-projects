@@ -73,19 +73,35 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
         for i in range(0, num_shadow):
                 shadow_n = create_model_fn()
                 x,y= random_subdataset(x_aux,y_aux,target_train_size) #get the sub dataset and turn shadow models 
-                trainData, testData = x[:target_train_size],x[target_train_size:]
-                trainLabels, testLabels = y[:target_train_size],y[target_train_size:]
+                trainSize = int(0.8*target_train_size)
+                print(trainSize)
+                trainData = x[:trainSize]
+                testData = x[trainSize:] #pick a size
+                trainLabels, testLabels = y[:trainSize],y[trainSize:]
                 #the classification of shadow models are added to the lists. 
                 shadowTrain = train_model_fn(shadow_n,trainData,trainLabels)
                 print("shokri attack train models: ", shadowTrain)
-                predictions = shadow_n.predict(testData)
+                predictions_train = shadow_n.predict(trainData)
+                predictions_test = shadow_n.predict(testData)
+                predictions = np.vstack((predictions_train, predictions_test))
                 # print(predictions)
-                in_or_out_pred = np.zeros((testData.shape[0],))
-                print("predictions is :", predictions)
-                print("test labels is :", testLabels)
-                print("in_or_out_pred is :", in_or_out_pred)
-                # data = np.stack((predictions,testLabels,in_or_out_pred),axis =-1)
-                # add_to_list(data)
+                in_or_out_pred = np.zeros((target_train_size,1))
+                IndexList = np.zeros((target_train_size,1))
+                in_or_out_pred[:trainSize] = 1
+                in_or_out_pred[trainSize:]=0
+
+                
+                idx = np.where(y == 1)
+
+                
+                IndexList = np.asarray(idx[1])
+                IndexList = np.reshape(IndexList,(in_or_out_pred.shape))
+                print(IndexList.shape)
+                print(in_or_out_pred.shape)
+                data_second = np.hstack((IndexList,in_or_out_pred))
+
+                data = np.column_stack((predictions,data_second))
+                add_to_list(data)
 
 
         # now train the models
@@ -198,23 +214,18 @@ def do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_trai
 """
 def do_posterior_attack(x_targets, y_targets, query_target_model, threshold):
 
-        ## TODO ##
-        ## Insert your code here
+        
         pv = query_target_model(x_targets)
-        posterior=[]
-
+        
+        posterior = np.array([])
         in_or_out_pred = np.zeros((x_targets.shape[0],))
         idx = np.where(y_targets == 1)
         listofcoordinates = list(zip(idx[0],idx[1]))
-        # print(listofcoordinates)
-        # print(x_targets)
-        # print(y_targets)
-        sumValue = np.sum(pv,axis = 0)
+        
         for item in listofcoordinates:
-            # print(pv[item[0]][item[1]])
-            # print(sumValue[item[1]])
-            posterior.append(pv[item[0]][item[1]]/sumValue[item[1]])
-        # print("posteriror is :", posterior)
+            
+            posterior = np.append(posterior, pv[item[0],item[1]])
+        
         in_or_out_pred = np.where(posterior< threshold,1,0)
         return in_or_out_pred
 
