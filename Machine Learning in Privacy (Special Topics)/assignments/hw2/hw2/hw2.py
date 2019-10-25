@@ -23,6 +23,7 @@ from keras.datasets import cifar100
 from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Sequential
 warnings.simplefilter("ignore")
+from sklearn.neural_network import MLPClassifier
 ## os / paths
 def ensure_exists(dir_fp):
     if not os.path.exists(dir_fp):
@@ -367,43 +368,41 @@ def main():
         
         plt.savefig('Posterior_threshold.png')
     elif probno == 4:  ## problem 4
+	    num_shadow = is_int(sys.argv[5])
+	    from sklearn.neural_network import MLPClassifier
+	    attack_model_fn = lambda : MLPClassifier(max_iter=500)
+	    create_model_fn = target_model_train_fn
+	    train_model_fn = lambda model, x, y: nets.train_model(model, x, y, None, None, num_epochs, verbose=False)
+	    attack_models = attacks.shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train_model_fn,
+	                                                num_shadow=num_shadow, attack_model_fn=attack_model_fn)
+	    in_or_out_pred_shokri = attacks.do_shokri_attack(attack_models, x_targets, y_targets, query_target_model)
+	    accuracy_shokri, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_shokri)
 
-        
+	    print('Shokri attack (MLP) accuracy, advantage: {:.1f}%, {:.2f}'.format( 100.0*accuracy_shokri, advantage))
+	    #Do Loss Attack
+	    loss_fn = nets.compute_loss
+	    loss_train_vec = loss_fn(y_train, target_model.predict(x_train))
+	    loss_test_vec = loss_fn(y_test, target_model.predict(x_test))
 
-        # attack_model_fn = 
-        create_model_fn = target_model_train_fn
-        train_model_fn = lambda model, x, y: nets.train_model(model, x, y, None, None, num_epochs, verbose=False)
-        attack_models = attacks.shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train_model_fn,
-                                                    num_shadow=num_shadow, attack_model_fn=attack_model_fn)
+	    mean_train_loss = np.mean(loss_train_vec)
+	    std_train_loss = np.std(loss_train_vec)
+	    mean_test_loss = np.mean(loss_test_vec)
+	    std_test_loss = np.std(loss_test_vec)
 
+	    #loss attack
+	    in_or_out_pred_loss = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
+	                                            mean_test_loss, std_test_loss)
+	    accuracy_loss, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss)
 
-        in_or_out_pred_shokri = attacks.do_shokri_attack(attack_models, x_targets, y_targets, query_target_model)
-        accuracy_shokri, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_shokri)
-
-        print('Shokri attack ({}) accuracy, advantage: {:.1f}%, {:.2f}'.format(attack_model_str, 100.0*accuracy, advantage))
-        #Do Loss Attack
-        loss_fn = nets.compute_loss
-        loss_train_vec = loss_fn(y_train, target_model.predict(x_train))
-        loss_test_vec = loss_fn(y_test, target_model.predict(x_test))
-
-        mean_train_loss = np.mean(loss_train_vec)
-        std_train_loss = np.std(loss_train_vec)
-        mean_test_loss = np.mean(loss_test_vec)
-        std_test_loss = np.std(loss_test_vec)
-
-        #loss attack
-        in_or_out_pred_loss = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
-                                                mean_test_loss, std_test_loss)
-        accuracy_loss, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss)
-
-        print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
-        #Do Loss Attack 2
-        in_or_out_pred_loss2 = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
-        accuracy_loss2, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
-        #Do posterior attack
-        in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, item )
-        accuracy_posterior, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
-        
+	    print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy_loss, advantage))
+	    #Do Loss Attack 2
+	    in_or_out_pred_loss2 = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, 0.5)
+	    accuracy_loss2, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
+	    print('Loss attack2 accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy_loss2, advantage))
+	    #Do posterior attack
+	    in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, 0.7 )
+	    accuracy_posterior, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
+	    print('posterior accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy_posterior, advantage))
 
     elif probno == 5:  ## problem 5 (bonus)
 
