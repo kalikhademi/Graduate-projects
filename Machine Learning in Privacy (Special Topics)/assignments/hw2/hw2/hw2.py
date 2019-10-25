@@ -19,7 +19,7 @@ import collections
 import attacks
 import warnings
 import math
-from keras.datasets import cifar10
+from keras.datasets import cifar100
 from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Sequential
 warnings.simplefilter("ignore")
@@ -409,20 +409,20 @@ def main():
 
         assert len(sys.argv) >= 5, 'Inconsistent number of arguments'
 
-  #       (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+        # (X_train, y_train), (X_test, y_test) = cifar100.load_data()
 		# print('x_train shape:', x_train.shape)
 		# print(x_train.shape[0], 'train samples')
 		# print(x_test.shape[0], 'test samples')
-
-		# y_train = keras.utils.to_categorical(y_train, num_classes)
-		# y_test = keras.utils.to_categorical(y_test, num_classes)
+		#nbclasses = 100
+		# Y_train = np_utils.to_categorical(y_train, nb_classes)
+		# Y_test = np_utils.to_categorical(y_test, nb_classes)
 		# train_loss, train_accuracy, test_loss, test_accuracy = nets.train_model(target_model, x_train, y_train, x_test, y_test, num_epochs, verbose=verb)
 
-	 #    print('Trained target model on {} records. Train accuracy and loss: {:.1f}%, {:.2f} -- Test accuracy and loss: {:.1f}%, {:.2f}'.format(target_train_size,
-  #                                                                                   100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
+	 	#print('Trained target model on {} records. Train accuracy and loss: {:.1f}%, {:.2f} -- Test accuracy and loss: {:.1f}%, {:.2f}'.format(target_train_size,
+  		#                                                                                   100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
 
-	 #    query_target_model = lambda x: target_model.predict(x)
-	 #    predictions = query_target_model(x_test)
+	 	# query_target_model = lambda x: target_model.predict(x)
+	 	# predictions = query_target_model(x_test)
 
 
 		        
