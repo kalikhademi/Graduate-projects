@@ -72,36 +72,39 @@ def shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train
 
         for i in range(0, num_shadow):
                 shadow_n = create_model_fn()
-                x,y= random_subdataset(x_aux,y_aux,target_train_size) #get the sub dataset and turn shadow models 
-                trainSize = int(0.8*target_train_size)
-                print(trainSize)
+                x,y= random_subdataset(x_aux,y_aux,2*target_train_size) #get the sub dataset and turn shadow models 
+                trainSize = (2*target_train_size)//2
+                # print("train size is:", trainSize)
                 trainData = x[:trainSize]
                 testData = x[trainSize:] #pick a size
                 trainLabels, testLabels = y[:trainSize],y[trainSize:]
-                #the classification of shadow models are added to the lists. 
+                 
                 shadowTrain = train_model_fn(shadow_n,trainData,trainLabels)
-                print("shokri attack train models: ", shadowTrain)
+                
                 predictions_train = shadow_n.predict(trainData)
                 predictions_test = shadow_n.predict(testData)
-                predictions = np.vstack((predictions_train, predictions_test))
-                # print(predictions)
-                in_or_out_pred = np.zeros((target_train_size,1))
-                IndexList = np.zeros((target_train_size,1))
-                in_or_out_pred[:trainSize] = 1
-                in_or_out_pred[trainSize:]=0
-
                 
-                idx = np.where(y == 1)
+                train_pred= np.zeros((predictions_train.shape[0],1))
+                test_pred= np.zeros((predictions_test.shape[0],1))
+                train_index = np.zeros((predictions_train.shape[0],1))
+                test_index = np.zeros((predictions_test.shape[0],1))
 
+                train_pred[:train_pred.shape[0]] = 1
+                test_pred[:test_pred.shape[0]] = 0
                 
-                IndexList = np.asarray(idx[1])
-                IndexList = np.reshape(IndexList,(in_or_out_pred.shape))
-                print(IndexList.shape)
-                print(in_or_out_pred.shape)
-                data_second = np.hstack((IndexList,in_or_out_pred))
-
-                data = np.column_stack((predictions,data_second))
-                add_to_list(data)
+                train_idx = [np.where(x == 1)[0][0] for x in trainLabels]
+                test_idx  = [np.where(x == 1)[0][0] for x in testLabels]
+                
+                train_index = np.array(train_idx).reshape(len(train_index), 1);
+                test_index = np.array(test_idx).reshape(len(test_index), 1);
+                
+                data_in = np.hstack((predictions_train,train_index))
+                data_in = np.hstack((data_in,train_pred))
+                data_out = np.hstack((predictions_test,test_index))
+                data_out = np.hstack((data_out,test_pred))
+                
+                add_to_list(data_in)
+                add_to_list(data_out)
 
 
         # now train the models

@@ -6,25 +6,22 @@
 
 import os
 import sys
-
 import numpy as np
 import matplotlib.pyplot as plt
-
 import tensorflow as tf
-
 # we'll use keras for neural networks
 import keras
 from keras.datasets import mnist
-
 import os
-
 # our neural network architectures
 import nets
 import collections
-
 import attacks
-
 import warnings
+import math
+from keras.datasets import cifar10
+from keras.layers import Conv2D, MaxPooling2D
+from keras.models import Sequential
 warnings.simplefilter("ignore")
 ## os / paths
 def ensure_exists(dir_fp):
@@ -306,6 +303,7 @@ def main():
         in_or_out_pred = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
                                                 mean_test_loss, std_test_loss)
         accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+        accuracy_loss = []
 
         print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
 
@@ -322,7 +320,7 @@ def main():
         idx = accuracy_list.index(max(accuracy_list))
         best_threshold_lossattack2 = threshold[idx]
 
-        print("the best threshold for loss attack 2 is:", best_threshold_lossattack2)
+        print("the best threshold for loss attack 2 is:", best_threshold_lossattack2,max(accuracy_list))
         ## Insert your code here to compute the best threshold (for posterior_attack)
         plot_list =[]
         for i in range(len(accuracy_list)):
@@ -331,12 +329,14 @@ def main():
         labels, ys = zip(*plot_list)
         xs = np.arange(len(labels)) 
         width =  0.5
-
+        high = max(ys)
+        low = min(ys)
+        # plt.ylim([math.ceil(low-0.5*(high-low)), math.ceil(high+0.5*(high-low))])
         plt.bar(xs, ys, width, align='center')
 
         plt.xticks(xs, labels) #Replace default x-ticks with xs, then replace xs with labels
         plt.yticks(ys)
-        
+        print("loss 2 acc:", accuracy_list)
         plt.savefig('Lossattack2_threshold.png')
 
         #posterior attack
@@ -363,43 +363,22 @@ def main():
 
         plt.xticks(xs, labels) #Replace default x-ticks with xs, then replace xs with labels
         plt.yticks(ys)
+        print("posterior acc:", accuracy_posterior)
         
         plt.savefig('Posterior_threshold.png')
     elif probno == 4:  ## problem 4
 
         
 
-        #Do the shokri attack
-        if attack_model_str == 'LR':
-            from sklearn.linear_model import LogisticRegression
-            attack_model_fn = lambda : LogisticRegression(solver='lbfgs')
-        elif attack_model_str == 'DT':
-            from sklearn.tree import DecisionTreeClassifier
-            attack_model_fn = DecisionTreeClassifier
-        elif attack_model_str == 'RF':
-            from sklearn.ensemble import RandomForestClassifier
-            attack_model_fn = RandomForestClassifier
-        elif attack_model_str == 'NB':
-            from sklearn.naive_bayes import GaussianNB
-            attack_model_fn = GaussianNB
-        elif attack_model_str == 'MLP':
-            from sklearn.neural_network import MLPClassifier
-            attack_model_fn = lambda : MLPClassifier(max_iter=500)
-        elif attack_model_str == 'SVM':
-            from sklearn.svm import LinearSVC
-            attack_model_fn = LinearSVC
-        else:
-            assert False, '{} is not a valid attack model type!'.format(attack_model_str)
-
+        # attack_model_fn = 
         create_model_fn = target_model_train_fn
         train_model_fn = lambda model, x, y: nets.train_model(model, x, y, None, None, num_epochs, verbose=False)
-
         attack_models = attacks.shokri_attack_models(x_aux, y_aux, target_train_size, create_model_fn, train_model_fn,
                                                     num_shadow=num_shadow, attack_model_fn=attack_model_fn)
 
 
-        in_or_out_pred = attacks.do_shokri_attack(attack_models, x_targets, y_targets, query_target_model)
-        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+        in_or_out_pred_shokri = attacks.do_shokri_attack(attack_models, x_targets, y_targets, query_target_model)
+        accuracy_shokri, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_shokri)
 
         print('Shokri attack ({}) accuracy, advantage: {:.1f}%, {:.2f}'.format(attack_model_str, 100.0*accuracy, advantage))
         #Do Loss Attack
@@ -413,23 +392,40 @@ def main():
         std_test_loss = np.std(loss_test_vec)
 
         #loss attack
-        in_or_out_pred = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
+        in_or_out_pred_loss = attacks.do_loss_attack(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss,
                                                 mean_test_loss, std_test_loss)
-        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
+        accuracy_loss, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss)
 
         print('Loss attack accuracy, advantage: {:.1f}%, {:.2f}'.format(100.0*accuracy, advantage))
         #Do Loss Attack 2
         in_or_out_pred_loss2 = attacks.do_loss_attack2(x_targets, y_targets, query_target_model, loss_fn, mean_train_loss, std_train_loss, item)
-        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
+        accuracy_loss2, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_loss2)
         #Do posterior attack
-        in_or_out_pred = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, item )
-        accuracy, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred)
-        accuracy_posterior.append(accuracy)
+        in_or_out_pred_post = attacks.do_posterior_attack(x_targets, y_targets, query_target_model, item )
+        accuracy_posterior, advantage, _ = attacks.attack_performance(in_or_out_targets, in_or_out_pred_post)
+        
 
     elif probno == 5:  ## problem 5 (bonus)
 
         assert len(sys.argv) >= 5, 'Inconsistent number of arguments'
-        
+
+  #       (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+		# print('x_train shape:', x_train.shape)
+		# print(x_train.shape[0], 'train samples')
+		# print(x_test.shape[0], 'test samples')
+
+		# y_train = keras.utils.to_categorical(y_train, num_classes)
+		# y_test = keras.utils.to_categorical(y_test, num_classes)
+		# train_loss, train_accuracy, test_loss, test_accuracy = nets.train_model(target_model, x_train, y_train, x_test, y_test, num_epochs, verbose=verb)
+
+	 #    print('Trained target model on {} records. Train accuracy and loss: {:.1f}%, {:.2f} -- Test accuracy and loss: {:.1f}%, {:.2f}'.format(target_train_size,
+  #                                                                                   100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
+
+	 #    query_target_model = lambda x: target_model.predict(x)
+	 #    predictions = query_target_model(x_test)
+
+
+		        
 
 if __name__ == '__main__':
     main()
