@@ -1,0 +1,404 @@
+\begin{filecontents}{refs.bib}
+@article{kurakin2016adversarial,
+  title={Adversarial examples in the physical world},
+  author={Kurakin, Alexey and Goodfellow, Ian and Bengio, Samy},
+  journal={arXiv preprint arXiv:1607.02533},
+  year={2016}
+}
+@inproceedings{carlini2017towards,
+  title={Towards evaluating the robustness of neural networks},
+  author={Carlini, Nicholas and Wagner, David},
+  booktitle={2017 IEEE Symposium on Security and Privacy (SP)},
+  pages={39--57},
+  year={2017},
+  organization={IEEE}
+}
+@inproceedings{papernot2016limitations,
+  title={The limitations of deep learning in adversarial settings},
+  author={Papernot, Nicolas and McDaniel, Patrick and Jha, Somesh and Fredrikson, Matt and Celik, Z Berkay and Swami, Ananthram},
+  booktitle={2016 IEEE European Symposium on Security and Privacy (EuroS\&P)},
+  pages={372--387},
+  year={2016},
+  organization={IEEE}
+}
+
+\end{filecontents}
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[letterpaper,margin=0.8in,nohead]{geometry}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage{url}
+\usepackage{breakurl}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={red},
+    citecolor={red},
+    urlcolor={blue}
+}
+
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{scrextend}
+\usepackage{enumitem}
+\usepackage{url}
+
+\usepackage{filecontents}
+%\usepackage{natbib}
+%\nobibliography*
+
+\usepackage{caption}
+\usepackage{graphicx}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+\newenvironment{answer}{\em \color{blue} \begin{adjustwidth}{1cm}{1cm}}{\end{adjustwidth}}
+
+% math
+\usepackage{amsthm,amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\mc}[1]{\mathcal{#1}}	% Mechanisms / Algorithms
+\newcommand{\rv}[1]{\mathbf{#1}}    % Random variable
+
+\newcommand{\pr}[1]{\mathrm{Pr}\{#1\}} % Probability
+
+\newtheorem{corollary}{\bf Corollary}%[theorem]
+\newtheorem{lemma}{\bf Lemma}%[theorem]
+\newtheorem{definition}{\bf Definition}%[section]
+
+\newtheorem{observation}{\bf Observation}%[theorem]
+
+
+
+% load cleveref last!
+\usepackage[capitalise]{cleveref}
+
+\crefname{observation}{Observation}{Observations}
+
+
+\begin{document}
+
+\title{CIS 6930: Privacy \& Machine Learning (Fall 2019) \\Homework 3 --- Adversarial Machine Learning}
+
+%% This is an individual assignment!!
+%% TODO: put your name here!
+\author{Name: \textcolor{magenta}{Write Your Name Here!}}
+
+\maketitle
+
+\begin{center}
+	\color{red}\bf This is an individual assignment!
+\end{center}
+
+\section*{Instructions}
+%
+
+Please read the instructions and questions carefully. Write your answers directly in the space provided. Compile the tex document and hand in the resulting PDF.
+
+In this assignment you will implement and evaluate several membership inference attacks in Python. Use the code skeleton provided and submit the completed source file(s) alongside with the PDF.\footnote{You are encouraged to use Python3. You may use HiPerGator or your own system. This assignment can be done with or without GPUs. If you want to use a GPU, please adjust \texttt{setup\_session()} in \texttt{hw3.py} accordingly.} {\em Note: bonus points you get on this homework *do* carry across assignments/homework.}
+
+
+\subsection*{Assignment Files}
+%
+The assignment archive contains the following Python source files:
+%
+\begin{itemize}[nolistsep]
+	\item \texttt{hw3.py}. This file is the main assignment source file.
+	\item \texttt{nets.py}. This file defines the neural network architectures and some useful related functions. 
+	\item \texttt{attacks.py}. This file contains attack code used in the assignment.
+\end{itemize}
+
+\medskip
+
+\noindent
+\underline{Note:} You are encouraged to carefully study the provided files. This may help you successfully complete the assignment.
+
+
+\newpage
+\section*{Problem 0: Training a Neural Net for MNIST Classification (15 pts)}
+%
+
+In this problem, you will train a neural network to do MNIST classification. 
+The code for this problem uses the following command format.
+%
+\begin{Verbatim}
+	python3 hw3.py problem0 <nn_desc> <target_train_size> <num_epoch>
+\end{Verbatim}
+%
+
+Here \texttt{<nn\_desc>} is a neural network description string (no whitespaces). It can take two forms: \texttt{simple,<num\_hidden>,<l2\_reg\_const>} or \texttt{deep}. The latter specifies the deep neural network architecture (see \texttt{get\_deeper\_classifier()} in \texttt{nets.py} for details), whereas the former specifies a simple neural network architecture (see \texttt{get\_simple\_classifier()} in \texttt{nets.py} for details) with one hidden layer with \texttt{<num\_hidden>} neurons and an $L_2$ regularization constant of \texttt{<l2\_reg\_const>}. Also, \texttt{<target\_train\_size>} is the number of records in the target model's training dataset and \texttt{<num\_epoch>} is the number of epoch to train for.
+
+
+
+
+For example, suppose you run the following command.
+%
+\begin{Verbatim}
+	python3 hw3.py problem0 simple,64,0.001 50000 100
+\end{Verbatim}
+This will train the target model on $50000$ MNIST images for $100$ epochs. The target model architecture is a neural network with a single hidden layer of $64$ neurons which uses $L_2$ regularization with a constant of $0.001$.\footnote{By default, the code will provide detailed output about the training process and the accuracy of the target model.} (The loss function is the categorical cross-entropy.)
+
+
+
+\begin{enumerate}
+	\item (5 pts) Run the following command:
+\begin{Verbatim}
+	python3 hw3.py problem0 simple,512,0.001 50000 100
+\end{Verbatim}
+	
+	This will train the model and save it on the filesystem. Note that '\texttt{problem0}' is used to denote training. The command line for subsequent problems (\texttt{problem1}, \texttt{problem2}, etc.) will load the model trained for this problem!
+	
+	\item (10 pts) What is the training accuracy? What is the test accuracy? Is the model overfitted?
+
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+\end{enumerate}
+
+\newpage
+\section*{Problem 1: Fun with Iterative Pixel Perturbation Attacks (60 pts)}
+%
+
+For this problem, you will use an attack that produces adversarial examples by iteratively modifying pixels. (The code is in \texttt{turn\_off\_pixels\_iterative\_attack()} which is located in \texttt{attacks.py}. )
+
+At each step, the ``turn off'' pixel attack computes the gradient of the loss for a given target label (with respect to the input), and uses this gradient to determine which pixel (that is currently ``on'') to turn ``off''. Each MNIST image is represented as an array of pixels, each taking a value in $\{0, 1, \ldots, 255\}$. We define as ``on'' a pixel with value larger than some threshold $t$ (by default $t=10$). Turning off a pixel is defined as setting its value to $0$. The attack ends after \texttt{max\_iter} iterations or as soon as the terminate condition is reached (e.g., if the model's prediction on the perturbed image matches the target label).
+ 
+This attack is already implemented, so you will only need to run it and reason (i.e., answer questions) about its output. You will then implement a complementary attack, the ``turn on'' pixel attack.
+
+To run the code for this problem, use the following command.
+%
+\begin{Verbatim}
+	python3 hw3.py problem1 <nn_desc> <train_sz> <num_epoch> <input_idx> <target_label>
+\end{Verbatim}
+%
+Here \texttt{<input\_idx>} is the input (benign) image that the attack will create an adversarial example from and \texttt{<target\_label>} is the target label. The code will automatically load the model from file, so you need to have completed Problem 0 first!
+
+%
+\begin{enumerate}
+%
+	\item (10 pts) Before we can reason about adversarial examples, we need a way to quantify the distortion of an adversarial perturbation with respect to the original image. Propose a metric to quantify this distortion as a single real number. Explain your choice.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+		
+	
+	\medskip \noindent Locate the incomplete definition of the \texttt{distortion} function in \texttt{hw3.py}, and implement your proposed metric. What is the range of your distortion metric?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	\item (15 pts) Now, let's run the attack using the following command with various input images and target labels.
+	\begin{Verbatim}
+     python3 hw3.py problem1 simple,512,0.001 50000 100 <input_idx> <target_label>
+	\end{Verbatim}	
+	Note: it is important than the architecture, size of training data, and number of epochs match what you ran for Problem 0. (The code uses these arguments to locate the model to load.)
+	
+	For example, try:
+	\begin{Verbatim}
+     python3 hw3.py problem1 simple,512,0.001 50000 100 0 8
+     python3 hw3.py problem1 simple,512,0.001 50000 100 0 5
+     python3 hw3.py problem1 simple,512,0.001 50000 100 4 1
+     python3 hw3.py problem1 simple,512,0.001 50000 100 9 9
+     python3 hw3.py problem1 simple,512,0.001 50000 100 14 7
+	\end{Verbatim}	
+	
+	The code will plot the adversarial examples (see \texttt{plots/}) and print the distortion according to your proposed metric. (After this, the code will throw an exception since you have not yet implemented the next attack.)
+	
+	Produce adversarial examples for at least three different digits and paste the plots here. Do you observe any failures? Do successful adversarial examples look like the original image or do they look like digits for the target label?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\medskip \noindent Now focus on producing adversarial examples for a given input image with different target labels. Is it easier for the attack to produce adversarial perturbations for target labels that are similar to the true label of the input image? For example, is it easier to produce a perturbation to classify a '6' as a '5' or a '3' as an '8' rather than a '5' as a '1' or a '7'? (Justify your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) With the existing termination function \texttt{done\_fn}(), the attack is declared a success as long as the model's highest prediction probability is for the target class. What if we want to generate {\em high confidence} adversarial examples? That is, suppose we would like the model's prediction probability for the target class to exceed a given threshold.
+	
+	Implement a new termination function \texttt{done\_fn}() that ensures that the model's predicted probability of the target class is at least $0.9$. (Use the (same) name, i.e., '\texttt{done\_fn}' so that from now on, this termination function will be the one used by the attack.)
+	
+	 When you run the code with this new termination function, does the attack succeed in finding such high confidence perturbations? (Paste an example plot here.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (15 pts) Implement the ``turn on'' pixel attack. Put your code in \texttt{turn\_on\_pixels\_iterative\_attack()}. 
+	
+	Now run the code again and paste both  adversarial examples you obtained (the one from the ``turn-off'' attack and the one from the ``turn-on'' attack). What do you observe? How do the two attacks compare in terms of confidence of prediction and distortion? (Explain your answer.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) 	Both attacks used in this problem are {\em targeted} attacks, they aim to make the model classify the adversarial example to a specific target label. Explain (conceptually) how you would modify one of these attacks to obtain an {\em untargeted} attack. (You do not have to implement it.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+\newpage
+\section*{Problem 2: Strange Predictions \& Adversarial Examples (25 pts)}
+%
+
+In this problem, we will look at strange behavior of neural nets using our MNIST classification model. Specifically, we will study the behavior of the model when given random images as input. 
+
+
+
+%
+\begin{enumerate}
+%
+	\item (10 pts) Locate the \texttt{random\_image}() function in main of \texttt{hw3.py}. The purpose of this function is to generate a random image in the input domain of MNIST. Each image is represented as a $1 \times 784$ array of pixels (integers) with each pixel taking a value in $\{0, 1, \ldots, 255\}$. 
+	
+	Fill in the code to draw a random image with independent pixel values selected uniformly in $\{0, 1, \ldots, 255\}$. Once you have implemented this, run the following command for some target label.
+	
+\begin{Verbatim}
+     python3 hw3.py problem2 simple,512,0.001 50000 100 <target_label>
+\end{Verbatim}
+
+	\smallskip \noindent The code will plot the distribution of predictions for random images (estimated over a large number of samples). What does the distribution look like? Is this expected or unexpected?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	After answering this question, turn off the \texttt{show\_distribution} flag.
+	
+	\item (15 pts) Run the previous command again. The code will generate a random image and use the ``turn off'' pixel attack to produce an adversarial example for it (given the target label chosen).
+	
+	Paste the plot here. What do notice? Do adversarial examples produced this way exhibit features that you expect given the target label? What do you conclude?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	 \medskip \noindent Is it easier to generate perturbations for digits that are well-represented in distribution you obtained in Problem 2.1? Is that expected? Why or why not?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+
+
+\newpage
+\section*{[Bonus] Problem 3: More attacks (20 pts)}
+%
+
+For this (bonus) problem you will implement an attack of your choice and compare it to the turn-on/off iterative pixel attacks. Specifically, you can implement any of the following attacks.
+
+\begin{itemize}
+	\item The basic iterative method of Kurakin et al.~\cite{kurakin2016adversarial}. (The course lecture slides may help.)
+	\item The JSMA attack of Papernot et al.~\cite{papernot2016limitations}
+	\item The Carlini \& Wagner attack~\cite{carlini2017towards}
+\end{itemize}
+
+%
+\begin{enumerate}
+%
+	\item (20 pts) Implement and run the attack. Choose the parameters so that the attack incurs similar (or lower) distortion than the turn-on/off iterative pixel attacks. Specify the command you ran! (Paste the plots here.)
+	
+	How does the attack you implemented compare to the turn-on/off pixel attacks?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+%
+\end{enumerate}
+
+
+%%\newpage
+\section*{[Bonus] Problem 4: Adversarial Training (40 pts)}
+%
+For this (bonus) problem, we would like to study the effectiveness of adversarial training.
+
+%
+\begin{enumerate}
+%
+	\item (20 pts) Implement adversarial training: at each training epochs, generate some adversarial samples using any attack (turn-on/off pixel attack, or the one your implemented for Problem 3), add those samples to the training data. Specify the parameters you used and the command you ran!
+	
+	Run the command for Problems 1, 2, or 3 on your adversarially trained model. Do the attack still produce successful adversarial example? (Paste some plots here.)
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+
+	
+	\item (10 pts) If you do adversarial training with samples from attack A. Is the trained model robust to attack B? (Justify your answer.) Can you show this experimentally?
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+	\item (10 pts) Use the membership inference attacks you implemented for Homework 2 to confirm or refute experimentally the claim that adversarial training {\em increases} the model's vulnerability to membership inference attack.
+	
+	\begin{answer}
+	
+		%% TODO: Write your answer here.	
+		Your answer here.
+		
+	\end{answer}
+	
+%
+\end{enumerate}
+
+
+\bibliographystyle{acm}
+\bibliography{refs}
+
+\end{document}
