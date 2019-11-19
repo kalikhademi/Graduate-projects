@@ -23,6 +23,7 @@ import os
 import nets
 
 import attacks
+import random
 
 ## os / paths
 def ensure_exists(dir_fp):
@@ -253,9 +254,9 @@ def main():
 
 
     def distortion(x_in, x_adv):
-        ## TODO ##
-        ## Insert your code here to calculate the distortion
-        raise NotImplementedError()
+        FlipPixel = np.where(x_in != x_adv)[0].shape[0]
+        percent_perturb = float(FlipPixel) / x_adv.reshape(-1).shape[0]
+        return np.mean(percent_perturb)
 
     def done_fn(model, x_in, x_adv, target):
         return np.argmax(model.predict(x_adv), axis=-1) == target
@@ -339,15 +340,17 @@ def main():
         max_iter = 150  # maximum number of iterations for the attack
 
         def random_image(size=(1,28*28)):
-            ## TODO ##
-            ## Insert your code here
-            raise NotImplementedError()
+            # choose random instances
+            ix = np.random.randint(0, x_test.shape[0], 1)
+            # retrieve selected images
+            X = x_test[ix]
+            
+            return X
 
         # distribution of predictions for random images of the model
-
         # turn this flag to False after answering question 2.1
-        show_distribution = True
-        #show_distribution = False
+        # show_distribution = True
+        show_distribution = False
         if show_distribution:
             num_samples = 1000
             predictions = np.zeros((10,))
