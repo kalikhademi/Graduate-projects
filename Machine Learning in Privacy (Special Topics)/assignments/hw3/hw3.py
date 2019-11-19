@@ -410,9 +410,7 @@ def main():
             x_aux.shape[0])
         target_label = is_int(sys.argv[6])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
-        ## TODO ##
-        ## Insert your code here
-        raise NotImplementedError()
+        
 
     elif probno == 4:  ## problem 4 (bonus)
 
