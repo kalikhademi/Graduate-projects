@@ -411,7 +411,6 @@ def main():
         target_label = is_int(sys.argv[6])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
         
-
     elif probno == 4:  ## problem 4 (bonus)
 
         ## TODO ##
