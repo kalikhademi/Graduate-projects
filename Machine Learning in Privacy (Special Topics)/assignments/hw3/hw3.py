@@ -259,7 +259,10 @@ def main():
         return np.mean(percent_perturb)
 
     def done_fn(model, x_in, x_adv, target):
-        return np.argmax(model.predict(x_adv), axis=-1) == target
+        
+        if(np.argmax(model.predict(x_adv), axis=-1) == target and np.argmax(model.predict(x_adv) > 0.9)):
+            return True
+
 
     ## TODO ##
     ## Insert your code here change the termination criterion

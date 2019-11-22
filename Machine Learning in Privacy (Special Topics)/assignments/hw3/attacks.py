@@ -77,12 +77,21 @@ def turn_on_pixels_iterative_attack(model, x_input, target_class, max_iter, term
         # grab the gradient of the loss (given target_class) with respect to the input!
         grad = gradient_of_loss_wrt_input(model, x_in, target_class)
 
-        ## TODO ##
-        ## Insert your code here
-        ## Use the gradient 'grad' to locate which pixel to turn on (at most one per iteration)
-        ## Note: to turn on a pixel set its value to 'on_val'.
-        ## Be careful and do not modify any pixels that are already on!
-        raise NotImplementedError()
+        # ## TODO ##
+        # ## Insert your code here
+        # ## Use the gradient 'grad' to locate which pixel to turn on (at most one per iteration)
+        # ## Note: to turn on a pixel set its value to 'on_val'.
+        # ## Be careful and do not modify any pixels that are already on!
+        # raise NotImplementedError()
+        # note: range of the loop doesn't matter here, we just need to eventually terminate
+        for j in range(x_in.shape[1]):
+            pixel_idx = np.argmax(-grad[0])
+            if x_in[0, pixel_idx] <= on_threshold:
+                if x_adv[0, pixel_idx] == 0:
+                    break                           # we found a pixel to "turn off"
+            grad[0, pixel_idx] = 0
+
+        x_adv[0, pixel_idx] = on_val
 
         iters = i+1 # save the number of iterations so we can return it
         # check if we should stop the attack early
