@@ -101,3 +101,18 @@ def turn_on_pixels_iterative_attack(model, x_input, target_class, max_iter, term
         x_in = x_adv    # for next iter: the current adversarial perturbation becomes our new input
 
     return x_adv, iters
+
+
+def adversarial_examples(model, x_train, target_class, max_iter, eta):
+    #random image to start with it
+    x = np.random.normal(0.5, 0.3, x_train.shape)
+
+    # GD on the input
+    for i in range(max_iter):
+        d = gradient_of_loss_wrt_input(model, x,target_class,num_classes=10)
+        x -= eta * d
+
+    target_label = np.zeros((10, 1))
+    target_label[target_class] = 1
+
+    return x, target_label

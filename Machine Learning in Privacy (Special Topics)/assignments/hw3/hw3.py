@@ -413,12 +413,33 @@ def main():
             x_aux.shape[0])
         target_label = is_int(sys.argv[6])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
+        epoch = is_int()
         
     elif probno == 4:  ## problem 4 (bonus)
+        #add adversial examples to the training
+        assert len(sys.argv) == 6, 'Incorrect number of arguments!'
 
-        ## TODO ##
-        ## Insert your code here
-        raise NotImplementedError()
+        target_label = is_int(sys.argv[5])
+        assert 0 <= target_label <= 9, 'Invalid target class label!'
+        eta = is_int(sys.argv[3])
+        max_iter = 150  # maximum number of iterations for the attack
+        model = target_model_train_fn()  # compile the target model
+        x_in, y_in = attacks.adversarial_examples(
+            model, x_train, target_label, max_iter, eta)
+        print("the training data",type(x_train))
+        print("the training label", type(y_train[0]))
+        x_train = np.concatenate((x_train, x_in), axis=0)
+        y_train = np.concatenate((y_train, y_in), axis=0)
+        # train the target model
+        train_loss, train_accuracy, test_loss, test_accuracy = nets.train_model(
+            model, x_train, y_train, x_test, y_test, num_epochs, verbose=verb)
+
+        print('Trained target model on {} records. Train accuracy and loss: {:.1f}%, {:.2f} -- Test accuracy and loss: {:.1f}%, {:.2f}'.format(target_train_size,100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
+
+
+        
+
+
 
 if __name__ == '__main__':
     main()
