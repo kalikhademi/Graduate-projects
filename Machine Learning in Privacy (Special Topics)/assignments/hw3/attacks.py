@@ -116,3 +116,26 @@ def adversarial_examples(model, x_train, target_class, max_iter, eta):
     target_label[target_class] = 1
 
     return x, target_label
+
+#Change the fgsm code for question 3: https://github.com/1Konny/FGSM/blob/master/adversary.py
+# def fgsm(self, x, y, targeted=False, eps=0.03, x_val_min=-1, x_val_max=1):
+#         x_adv = Variable(x.data, requires_grad=True)
+#         h_adv = self.net(x_adv)
+#         if targeted:
+#             cost = self.criterion(h_adv, y)
+#         else:
+#             cost = -self.criterion(h_adv, y)
+
+#         self.net.zero_grad()
+#         if x_adv.grad is not None:
+#             x_adv.grad.data.fill_(0)
+#         cost.backward()
+
+#         x_adv.grad.sign_()
+#         x_adv = x_adv - eps*x_adv.grad
+#         x_adv = torch.clamp(x_adv, x_val_min, x_val_max)
+
+#         h = self.net(x)
+#         h_adv = self.net(x_adv)
+
+#         return x_adv, h_adv, h
