@@ -14,6 +14,7 @@ import sklearn.metrics as metrics
 from sklearn.linear_model import LogisticRegression
 
 import scipy.stats as stats
+import tensorflow as tf
 
 """
 ## Returns the gradient of the loss (categorical crossentropy) with respect to the input (given class label 'target_class')
@@ -103,7 +104,7 @@ def turn_on_pixels_iterative_attack(model, x_input, target_class, max_iter, term
     return x_adv, iters
 
 
-def adversarial_examples(model, x_train, target_class, max_iter, eta):
+def adversarial_examples(model, x_train,y, target_class, max_iter, eta):
     #random image to start with it
     x = np.random.normal(0.5, 0.3, x_train.shape)
 
@@ -117,25 +118,21 @@ def adversarial_examples(model, x_train, target_class, max_iter, eta):
 
     return x, target_label
 
-#Change the fgsm code for question 3: https://github.com/1Konny/FGSM/blob/master/adversary.py
-# def fgsm(self, x, y, targeted=False, eps=0.03, x_val_min=-1, x_val_max=1):
-#         x_adv = Variable(x.data, requires_grad=True)
-#         h_adv = self.net(x_adv)
-#         if targeted:
-#             cost = self.criterion(h_adv, y)
-#         else:
-#             cost = -self.criterion(h_adv, y)
 
-#         self.net.zero_grad()
-#         if x_adv.grad is not None:
-#             x_adv.grad.data.fill_(0)
-#         cost.backward()
+def FGSM(model, x, y, target_class,x_min, x_max):
+    #generate adversial examples
+    eta = 0.005
+    max_iter = 100
+    perturbations,y_labels = adversarial_examples(model, x, y, target_class, max_iter, eta)
+    
+    epsilons = [0, 0.01,0.005,0.0001, 0.1, 0.15]
+    descriptions = [('Epsilon = {:0.3f}'.format(eps) if eps else 'Input') for eps in epsilons]
+    
+    #generate adversial examples usig the perturbations and then map it to a specific range clip function.
+    for eps in epsilons:
+        adv_x = x + eps*perturbations
+        adv_x = tf.clip_by_value(adv_x, x_min, x_max)
 
-#         x_adv.grad.sign_()
-#         x_adv = x_adv - eps*x_adv.grad
-#         x_adv = torch.clamp(x_adv, x_val_min, x_val_max)
+    return adv_x
+    
 
-#         h = self.net(x)
-#         h_adv = self.net(x_adv)
-
-#         return x_adv, h_adv, h

@@ -406,14 +406,16 @@ def main():
 
     elif probno == 3:  ## problem 3 (bonus)
 
-        assert len(sys.argv) == 7, 'Incorrect number of arguments!'
+        assert len(sys.argv) == 6, 'Incorrect number of arguments!'
 
         input_idx = is_int(sys.argv[5])
         assert 0 <= input_idx <= x_aux.shape[0], 'Invalid input index (must be between 0 and {})!'.format(
             x_aux.shape[0])
         target_label = is_int(sys.argv[6])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
-        epoch = is_int()
+        x_adv_fgsm = attacks.FGSM(model, x_train, y_train,target_label, 0, 1)
+        plot_adversarial_example(x_train, x_adv_fgsm, show=True, fname='fgsm')
+        
         
     elif probno == 4:  ## problem 4 (bonus)
         #add adversial examples to the training
