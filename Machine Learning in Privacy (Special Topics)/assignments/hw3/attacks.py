@@ -119,20 +119,34 @@ def adversarial_examples(model, x_train,y, target_class, max_iter, eta):
     return x, target_label
 
 
-def FGSM(model, x, y, target_class,x_min, x_max):
-    #generate adversial examples
-    eta = 0.005
-    max_iter = 100
-    perturbations,y_labels = adversarial_examples(model, x, y, target_class, max_iter, eta)
+# def FGSM(model, x, y, target_class,x_min, x_max):
+#     #generate adversial examples
+#     eta = 0.005
+#     max_iter = 100
+#     perturbations,y_labels = adversarial_examples(model, x, y, target_class, max_iter, eta)
+#     x_adv = x.copy()
+#     epsilons = [0, 0.01,0.005,0.0001, 0.1, 0.15]
+#     descriptions = [('Epsilon = {:0.3f}'.format(eps) if eps else 'Input') for eps in epsilons]
     
-    epsilons = [0, 0.01,0.005,0.0001, 0.1, 0.15]
-    descriptions = [('Epsilon = {:0.3f}'.format(eps) if eps else 'Input') for eps in epsilons]
-    
-    #generate adversial examples usig the perturbations and then map it to a specific range clip function.
-    for eps in epsilons:
-        adv_x = x + eps*perturbations
-        adv_x = tf.clip_by_value(adv_x, x_min, x_max)
+#     #generate adversial examples usig the perturbations and then map it to a specific range clip function.
+#     for eps in epsilons:
+#         x_adv = x + eps*perturbations
+#         x_adv = tf.clip_by_value(x_adv, x_min, x_max)
 
-    return adv_x
-    
+#     return x_adv
+
+def fgsm_simple(model, x_input,target_class, max_iter,eps):
+    x_in = x_input.copy()
+    x_adv = x_in.copy()
+    for i in range(max_iter):
+        # Get the gradients of the loss w.r.t to the input image.
+        grad = gradient_of_loss_wrt_input(model,x_in, target_class)
+        
+        # Get the sign of the gradients to create the perturbation
+        signed_grad = np.sign(grad)
+        adv_x = x_in + eps*signed_grad
+        # adv_x = tf.clip_by_value(adv_x, 0, 1)
+        iters = i+1
+    return adv_x, iters
+
 

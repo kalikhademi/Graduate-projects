@@ -123,7 +123,11 @@ def plot_image(im, fname='out.png', show=False):
 def plot_adversarial_example(x, x_adv, fname='adv_ex.png', show=False, cmap='gray_r'):
     fig = plt.figure()
     imx = x.reshape((-1,28, 28))
-    imadv = x_adv.reshape((-1, 28, 28))
+    if tf.is_tensor(x_adv):
+        imadv = tf.reshape(x_adv, [-1,28, 28])
+    else:
+        imadv = x_adv.reshape((-1, 28, 28))
+    
 
     assert imx.shape[0] == 1, 'Unexpected image dimensions (is this not a MNIST image?)!'
     assert imadv.shape[0] == 1, 'Unexpected image dimensions (is this not a MNIST image?)!'
@@ -170,8 +174,6 @@ def setup_session(verbose=False):
     gpus = keras.backend.tensorflow_backend._get_available_gpus()
     if len(gpus) == 0:
         print('Warning: no available GPU(s)!')
-
-
 
 
 ## this is the main
@@ -262,10 +264,6 @@ def main():
         
         if(np.argmax(model.predict(x_adv), axis=-1) == target and np.argmax(model.predict(x_adv) > 0.9)):
             return True
-
-
-    ## TODO ##
-    ## Insert your code here change the termination criterion
 
 
     if probno == 1: ## problem 1
@@ -405,23 +403,77 @@ def main():
         plot_adversarial_example(x_input, x_adv, show=True, fname='random_turn-off')
 
     elif probno == 3:  ## problem 3 (bonus)
-
         assert len(sys.argv) == 6, 'Incorrect number of arguments!'
 
-        input_idx = is_int(sys.argv[5])
+        input_idx = is_int(sys.argv[4])
         assert 0 <= input_idx <= x_aux.shape[0], 'Invalid input index (must be between 0 and {})!'.format(
             x_aux.shape[0])
-        target_label = is_int(sys.argv[6])
+        target_label = is_int(sys.argv[5])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
-        x_min = is_int(sys.argv[7])
-        x_max = is_int(sys.argv[8])
-        x_adv_fgsm = attacks.FGSM(model, x_train, y_train,target_label, x_min, x_max)
-        plot_adversarial_example(x_aux, x_adv_fgsm, show=True, fname='fgsm')
+
+        max_iter = 100      # maximum number of iterations for the attack
+
+        x_input = x_aux[input_idx, :].reshape((1, -1))
+
+        y_true_lab = np.argmax(y_aux[input_idx, :], axis=-1)
+
+        y_pred = model.predict(x_input).reshape(-1)
+        y_pred_lab = np.argmax(y_pred, axis=-1)
+
+        print('\nSelected input {} -- true label: {}, predicted label: {} (confidence: {:.2f}%) -- target label for perturbation: {}'.format(
+            input_idx, y_true_lab, y_pred_lab, 100.0*float(y_pred[y_pred_lab]), target_label))
+        assert target_label != y_pred_lab, 'Target label should NOT be the same as predicted label!'
+
+        ## turn-off pixels attack
+        x_in = x_input.copy()
+
+        t = time.process_time()
+        print('\nRunning the turn-off pixels iterative attack (<={} iterations).'.format(max_iter))
+        for eps in [0, 0.01, 0.1, 0.15]:
+            x_adv, iters = attacks.fgsm_simple(model, x_input, target_label, max_iter, eps)
+        elapsed_time = time.process_time() - t
+
+        y_adv = model.predict(x_adv).reshape(-1)
+        y_label = np.argmax(y_adv, axis=-1)
+
+        status = '\tAttack failed'
+        if done_fn(model, x_in, x_adv, target_label):
+            status = '\tAttack successful ({} iterations - {:.1f} seconds)'.format(
+                iters, elapsed_time)
+
+        print('{}, the adversarial example is classified as \'{}\' with {:.2f}% confidence by the model!'.format(
+            status,  y_label, 100.0 * float(y_adv[y_label])))
+
+        print('\tDistortion: {:.2f}'.format(distortion(x_input, x_adv)))
+        plot_adversarial_example(
+            x_input, x_adv, show=True, fname='adv_turn-off')
+
+
+        # assert len(sys.argv) == 6, 'Incorrect number of arguments!'
+        # print(len(sys.argv))
+        # input_idx = is_int(sys.argv[4])
+        # assert 0 <= input_idx <= x_aux.shape[0], 'Invalid input index (must be between 0 and {})!'.format(
+        #     x_aux.shape[0])
+        # target_label = is_int(sys.argv[5])
+        # assert 0 <= target_label <= 9, 'Invalid target class label!'
+        # x_input = x_aux[input_idx, :].reshape((1, -1))
+        # x_in = x_input.copy()
+        # #compute the signed perturbations 
+        # x_adv_fgsm = attacks.fgsm_simple(model, x_in, target_label)
+        # epsilons = [0, 0.01, 0.1, 0.15]
+        # for i, eps in enumerate(epsilons):
+        #     adv_x = x_in + tf.keras.layers.Multiply(eps,x_adv_fgsm)
+        #     adv_x = tf.clip_by_value(adv_x, 0, 1)
+
+        #     #visualizing the adversial picture for different ranges of epsilon
+        #     plt.figure()
+        #     plt.imshow(adv_x[0])
+        #     plt.show()
         
         
     elif probno == 4:  ## problem 4 (bonus)
         #add adversial examples to the training
-        assert len(sys.argv) == 8, 'Incorrect number of arguments!'
+        assert len(sys.argv) == 6, 'Incorrect number of arguments!'
 
         target_label = is_int(sys.argv[5])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
@@ -439,11 +491,6 @@ def main():
             model, x_train, y_train, x_test, y_test, num_epochs, verbose=verb)
 
         print('Trained target model on {} records. Train accuracy and loss: {:.1f}%, {:.2f} -- Test accuracy and loss: {:.1f}%, {:.2f}'.format(target_train_size,100.0*train_accuracy, train_loss, 100.0*test_accuracy, test_loss))
-
-
-        
-
-
 
 if __name__ == '__main__':
     main()
