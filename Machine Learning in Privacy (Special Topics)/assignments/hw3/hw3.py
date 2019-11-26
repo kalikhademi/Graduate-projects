@@ -413,13 +413,15 @@ def main():
             x_aux.shape[0])
         target_label = is_int(sys.argv[6])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
-        x_adv_fgsm = attacks.FGSM(model, x_train, y_train,target_label, 0, 1)
-        plot_adversarial_example(x_train, x_adv_fgsm, show=True, fname='fgsm')
+        x_min = is_int(sys.argv[7])
+        x_max = is_int(sys.argv[8])
+        x_adv_fgsm = attacks.FGSM(model, x_train, y_train,target_label, x_min, x_max)
+        plot_adversarial_example(x_aux, x_adv_fgsm, show=True, fname='fgsm')
         
         
     elif probno == 4:  ## problem 4 (bonus)
         #add adversial examples to the training
-        assert len(sys.argv) == 6, 'Incorrect number of arguments!'
+        assert len(sys.argv) == 8, 'Incorrect number of arguments!'
 
         target_label = is_int(sys.argv[5])
         assert 0 <= target_label <= 9, 'Invalid target class label!'
